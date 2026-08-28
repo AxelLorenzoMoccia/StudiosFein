@@ -1,4 +1,5 @@
 import ImageSequenceViewer from './ImageSequenceViewer';
+import MacbookOpenReveal from './MacbookOpenReveal';
 
 /* ============================================================
  *  ASSETS — Secuencia de la Macbook
@@ -39,19 +40,11 @@ const macbookFrames = Object.keys(frameModules)
  */
 export default function MacbookSequenceSection() {
   if (!macbookFrames.length) {
-    // Placeholder de desarrollo: se muestra solo mientras no haya
-    // frames reales en la carpeta de arriba. Se puede borrar este
-    // bloque `if` una vez que los assets estén puestos.
-    return (
-      <section className="flex h-screen w-full items-center justify-center bg-neutral-950 px-6 text-center">
-        <p className="max-w-md text-sm leading-relaxed text-neutral-500">
-          Faltan los frames de la Macbook. Colocalos en{' '}
-          <code className="text-neutral-300">src/assets/frames/macbook/</code> con el
-          formato <code className="text-neutral-300">frame_0001.webp</code>,{' '}
-          <code className="text-neutral-300">frame_0002.webp</code>, etc.
-        </p>
-      </section>
-    );
+    // Fallback de diseño: mientras no haya frames reales en la carpeta
+    // de arriba, se muestra la versión ilustrada (CSS/SVG + GSAP) —
+    // ver MacbookOpenReveal.jsx. Apenas se agreguen frames reales acá,
+    // este fallback deja de usarse solo, no hace falta tocar nada.
+    return <MacbookOpenReveal />;
   }
 
   return <ImageSequenceViewer frameUrls={macbookFrames} scrollLength={4} className="bg-neutral-950" />;
