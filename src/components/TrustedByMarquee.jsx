@@ -113,11 +113,11 @@ export default function TrustedByMarquee() {
           100% { transform: translateX(-50%); }
         }
         .fein-marquee-track {
-          animation: fein-marquee 70s linear infinite;
+          animation: fein-marquee 20s linear infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .fein-marquee-track {
-            animation-duration: 210s;
+            animation-duration: 60s;
           }
         }
       `}</style>
