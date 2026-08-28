@@ -7,12 +7,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Cuerpo/UI — todo lo que no sea un momento "editorial".
+        // Una sola tipografía para todo el sitio.
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        // Momentos editoriales puntuales: manifiesto (StatementSection) y
-        // cierre de contacto (ContactSection). No se usa en el wordmark
-        // "Fein" a propósito — el logo se mantiene siempre en sans.
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
       },
       colors: {
         // Acento de marca — dorado apagado, usado con cuentagotas (un

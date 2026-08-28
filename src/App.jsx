@@ -4,10 +4,15 @@ import StatementSection from './components/StatementSection';
 import MacbookSequenceSection from './components/MacbookSequenceSection';
 import WeavyTransition from './components/WeavyTransition';
 import ServicesSection from './components/ServicesSection';
-import AIGallery from './components/AIGallery';
 import TrustedByMarquee from './components/TrustedByMarquee';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
+
+// AIGallery.jsx ("Explorado con IA") queda sin usar acá a pedido del
+// cliente — no aportaba claridad todavía. El componente y las 4
+// imágenes generadas siguen en el repo por si se retoma más adelante;
+// para reactivarla alcanza con importarla y agregar <AIGallery /> donde
+// corresponda, no hace falta rehacer nada.
 
 export default function App() {
   return (
@@ -18,7 +23,7 @@ export default function App() {
       {/* 1. Intro — logo Fein + tagline, fade + zoom in */}
       <IntroSection />
 
-      {/* 2. Manifiesto — texto en foco que se revela al scrollear */}
+      {/* 2. Manifiesto de marca */}
       <StatementSection />
 
       {/* 3. Secuencia Macbook — canvas de imágenes pineado (o su
@@ -31,13 +36,10 @@ export default function App() {
       {/* 5. Qué hacemos — tarjetas de servicios */}
       <ServicesSection />
 
-      {/* 6. Galería IA — grid con fade-up/stagger + foto flotante */}
-      <AIGallery />
-
-      {/* 7. Quienes confiaron en nosotros — tren de logos infinito */}
+      {/* 6. Quienes confiaron en nosotros — tren de logos infinito */}
       <TrustedByMarquee />
 
-      {/* 8. Contacto — cierre del sitio */}
+      {/* 7. Contacto — cierre del sitio */}
       <ContactSection />
 
       <Footer />

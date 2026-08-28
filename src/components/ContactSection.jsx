@@ -32,7 +32,7 @@ export default function ContactSection() {
         ¿Tenés un proyecto en mente?
         <span className="h-px w-8 bg-accent/60" aria-hidden="true" />
       </p>
-      <h2 data-contact-reveal className="font-serif text-5xl italic text-white md:text-7xl">
+      <h2 data-contact-reveal className="text-4xl font-semibold text-white md:text-6xl">
         Hablemos.
       </h2>
       <p data-contact-reveal className="mx-auto mt-6 max-w-xl text-neutral-400">
