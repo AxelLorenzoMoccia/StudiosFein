@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Nota: evitamos "scroll-behavior: smooth" a propósito.
+  Interfiere con los cálculos de posición de ScrollTrigger (GSAP).
+  Si más adelante se necesita scroll suave, usar una librería como
+  Lenis, que sí es compatible con ScrollTrigger.
+*/
+
+body {
+  @apply bg-neutral-950 text-white antialiased;
+}
