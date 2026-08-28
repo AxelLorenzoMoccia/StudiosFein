@@ -197,6 +197,12 @@ export default function ImageSequenceViewer({
         },
       });
 
+      // Defensivo: si algo (fuentes, imágenes pesadas, layout shift) corrió
+      // después de que ScrollTrigger midió el trigger por primera vez, esto
+      // corrige start/end. Normalmente ScrollTrigger ya se auto-refresca
+      // solo en el próximo frame, pero forzarlo acá no tiene costo real.
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+
       // Se ejecuta al desmontar o al re-crear el efecto (deps abajo).
       return () => {
         window.removeEventListener('resize', resizeCanvas);

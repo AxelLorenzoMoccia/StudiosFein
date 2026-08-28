@@ -1,24 +1,22 @@
-import ImageSequenceViewer from './components/ImageSequenceViewer';
-
-const TEST_FRAME_COUNT = 24;
-const testFrames = Array.from({ length: TEST_FRAME_COUNT }, (_, i) => {
-  const hue = Math.round((i / (TEST_FRAME_COUNT - 1)) * 300);
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'><rect width='100%' height='100%' fill='hsl(${hue},70%,50%)'/><text x='50%' y='50%' font-size='160' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif'>${i + 1}</text></svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-});
+import IntroSection from './components/IntroSection';
+import MacbookSequenceSection from './components/MacbookSequenceSection';
+import WeavyTransition from './components/WeavyTransition';
+import AIGallery from './components/AIGallery';
 
 export default function App() {
   return (
-    <main>
-      <section className="flex h-screen items-center justify-center bg-white text-3xl text-black">
-        ANTES del viewer (debe scrollear normal)
-      </section>
+    <main className="bg-neutral-950">
+      {/* 1. Intro — logo Fein, fade + zoom in */}
+      <IntroSection />
 
-      <ImageSequenceViewer frameUrls={testFrames} scrollLength={3} debug />
+      {/* 2. Secuencia Macbook — canvas de imágenes pineado */}
+      <MacbookSequenceSection />
 
-      <section className="flex h-screen items-center justify-center bg-white text-3xl text-black">
-        DESPUÉS del viewer (debe scrollear normal)
-      </section>
+      {/* 3. Transición ola — revela la galería */}
+      <WeavyTransition />
+
+      {/* 4. Galería IA — grid con fade-up/stagger + foto flotante */}
+      <AIGallery />
     </main>
   );
 }
