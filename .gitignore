@@ -29,3 +29,9 @@ dist-ssr
 # locales para el asistente, no forman parte del sitio.
 .agents/
 skills-lock.json
+
+# Secretos locales (API keys, etc.) — nunca a git. .mcp.json sí se commitea,
+# pero solo referencia variables de entorno (${VAR}), nunca el valor real.
+.env
+.env.*
+!.env.example
