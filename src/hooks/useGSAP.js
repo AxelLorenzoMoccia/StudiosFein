@@ -1,8 +1,24 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { CustomEase } from 'gsap/CustomEase';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, CustomEase);
+
+/**
+ * Curvas custom (no las genéricas `power2`/`ease` de siempre) — las
+ * mismas que usan Vercel/Linear, vía la skill "emil-design-eng"
+ * (animations.dev). Los `power*` de GSAP están bien, pero estas se
+ * sienten más "con intención": entran/salen más fuerte, no como un
+ * ease genérico de manual.
+ *
+ * `CustomEase.create(nombre, "x1,y1,x2,y2")` acepta directamente los
+ * 4 números de un cubic-bezier estándar (sin necesidad de convertir a
+ * su formato de path). Gratis desde GSAP 3.12 — antes era plugin pago
+ * del Club GreenSock.
+ */
+CustomEase.create('feinOut', '0.23, 1, 0.32, 1');
+CustomEase.create('feinInOut', '0.77, 0, 0.175, 1');
 
 /**
  * Hook para animar con GSAP dentro de React de forma segura.

@@ -77,7 +77,11 @@ export default function MacbookVideoScrub({ videoSrc, scrollLength = 3.5, debug 
         .fromTo(
           '[data-tshirt-wrap]',
           { opacity: 0, y: 40, scale: 0.85 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'back.out(1.4)' },
+          // `feinOut` (curva custom registrada en useGSAP.js), no
+          // `back.out`: esto está atado 1:1 al scroll, y algo trackeado
+          // en vivo no debería rebotar por su cuenta — ver el comentario
+          // largo sobre esto en MacbookOpenReveal.jsx.
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'feinOut' },
           'handoff+=0.2'
         )
         .addLabel('spin1', 'handoff+=1')

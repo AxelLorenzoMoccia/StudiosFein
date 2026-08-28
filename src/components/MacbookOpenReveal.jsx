@@ -60,20 +60,31 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
       // [data-mb-edge] (el canto grueso detrás de la tapa) se squishea
       // junto con lo que esté visible, para que el "grosor" nunca quede
       // desincronizado del panel que lo trae puesto.
+      //
+      // `feinOut` en vez de `power2.in`: "entra o sale → ease-out" es
+      // la regla (skill emil-design-eng/apple-design) tanto para lo
+      // que aparece COMO para lo que se va — un ease-in acá arranca
+      // lento y se siente laggeado justo en el instante en que el ojo
+      // está mirando. `power2.in` era literalmente la regla al revés.
       .to(
         '[data-mb-closed], [data-mb-edge]',
-        { scaleY: 0, rotationZ: -6, duration: 1, ease: 'power2.in' },
+        { scaleY: 0, rotationZ: -6, duration: 1, ease: 'feinOut' },
         'flip'
       )
       .set('[data-mb-closed]', { opacity: 0 }, 'flip+=1')
       .set('[data-mb-open]', { opacity: 1 }, 'flip+=1')
-      // 2. La laptop abierta se despliega desde ese mismo canto, con un
-      //    pequeño "overshoot" (back.out) para que se sienta menos
-      //    mecánica, como si el propio impulso de abrirla la pasara
-      //    de largo un toque antes de asentarse.
+      // 2. La laptop abierta se despliega desde ese mismo canto.
+      //    Antes tenía overshoot (`back.out`) para que "pasara de
+      //    largo" un toque. Se saca: este movimiento está atado 1:1 al
+      //    scroll (no es una animación que corre sola tras un gesto),
+      //    y el principio de "direct manipulation" de Apple es
+      //    justamente que algo trackeado en vivo no rebota por su
+      //    cuenta — el rebote se reserva para gestos con momentum
+      //    (flicks, drag-to-dismiss), no para algo que el usuario está
+      //    controlando con la rueda del mouse en ese instante.
       .from(
         '[data-mb-open], [data-mb-edge]',
-        { scaleY: 0, rotationZ: 6, duration: 1, ease: 'back.out(1.5)' },
+        { scaleY: 0, rotationZ: 6, duration: 1, ease: 'feinOut' },
         'flip+=1'
       )
       .to('[data-mb-screen]', { opacity: 1, duration: 0.6 }, 'flip+=1.3')
@@ -84,7 +95,7 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
       //    su lugar del otro lado — como un holograma saliendo de la
       //    pantalla, no una prenda que apareció de la nada.
       .addLabel('reveal', 'flip+=2')
-      .to('[data-mb-rig]', { x: '-15vw', scale: 0.72, duration: 1.1, ease: 'power2.inOut' }, 'reveal')
+      .to('[data-mb-rig]', { x: '-15vw', scale: 0.72, duration: 1.1, ease: 'feinInOut' }, 'reveal')
       .fromTo(
         '[data-mb-beam]',
         { opacity: 0, scale: 0.6 },
@@ -95,7 +106,7 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
       .fromTo(
         '[data-tshirt-wrap]',
         { opacity: 0, x: '-8vw', y: 10, scale: 0.12 },
-        { opacity: 1, x: '15vw', y: 0, scale: 1, duration: 1.3, ease: 'power3.out' },
+        { opacity: 1, x: '15vw', y: 0, scale: 1, duration: 1.3, ease: 'feinOut' },
         'reveal+=0.45'
       )
 
