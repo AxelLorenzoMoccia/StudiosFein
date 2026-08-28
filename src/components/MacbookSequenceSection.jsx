@@ -43,7 +43,8 @@ const videoModules = import.meta.glob('../assets/videos/*.{mp4,webm}', {
   import: 'default',
 });
 
-const macbookVideoSrc = Object.keys(videoModules).sort()[0] ?? null;
+const videoKeys = Object.keys(videoModules).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+const macbookVideoSrc = videoKeys.length ? videoModules[videoKeys[0]] : null;
 
 /**
  * 2. SECUENCIA MACBOOK
