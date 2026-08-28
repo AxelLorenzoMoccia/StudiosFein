@@ -32,5 +32,12 @@ body,
 }
 
 body {
-  @apply text-white antialiased;
+  @apply font-sans text-white antialiased;
+}
+
+/* Instrument Serif no trae peso 500/600 — si alguna clase de Tailwind le
+   pide font-medium/font-semibold por herencia, se queda en 400 (su único
+   peso real) en vez de que el navegador la "engorde" artificialmente. */
+.font-serif {
+  font-weight: 400;
 }

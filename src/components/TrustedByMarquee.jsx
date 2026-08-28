@@ -122,9 +122,14 @@ export default function TrustedByMarquee() {
         }
       `}</style>
 
-      <h2 className="mb-14 text-center text-3xl font-semibold text-white md:text-5xl">
-        Quienes confiaron en nosotros
-      </h2>
+      <div className="mb-14 flex flex-col items-center gap-4 text-center">
+        <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
+          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+          Confianza
+          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+        </span>
+        <h2 className="text-3xl font-semibold text-white md:text-5xl">Quienes confiaron en nosotros</h2>
+      </div>
 
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div

@@ -38,7 +38,7 @@ export default function IntroSection() {
       },
     });
 
-    tl.to('[data-intro-logo]', { opacity: 0, ease: 'none', duration: 0.4 }, 0).to(
+    tl.to('[data-intro-logo], [data-intro-tagline]', { opacity: 0, ease: 'none', duration: 0.4 }, 0).to(
       '[data-intro-scale]',
       { scale: 6, ease: 'none', duration: 1 },
       0
@@ -50,7 +50,7 @@ export default function IntroSection() {
       <div data-intro-pin className="relative h-screen w-full overflow-hidden">
         <div
           data-intro-scale
-          className="flex h-full w-full items-center justify-center will-change-transform"
+          className="flex h-full w-full flex-col items-center justify-center gap-5 will-change-transform"
         >
           <h1
             data-intro-logo
@@ -58,6 +58,14 @@ export default function IntroSection() {
           >
             Fein
           </h1>
+          <p
+            data-intro-tagline
+            className="flex select-none items-center gap-3 text-xs font-medium uppercase tracking-[0.35em] text-neutral-400 sm:text-sm"
+          >
+            <span className="h-px w-6 bg-accent" aria-hidden="true" />
+            Estudio de diseño e identidad de marca
+            <span className="h-px w-6 bg-accent" aria-hidden="true" />
+          </p>
         </div>
       </div>
     </section>

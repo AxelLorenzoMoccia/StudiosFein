@@ -76,9 +76,14 @@ export default function AIGallery() {
       ref={scope}
       className="w-full bg-neutral-50 px-6 py-24 text-neutral-950 md:px-16"
     >
-      <h2 className="mb-16 text-center text-3xl font-semibold md:text-5xl">
-        Explorado con IA
-      </h2>
+      <div className="mb-16 flex flex-col items-center gap-4 text-center">
+        <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-400">
+          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+          Exploración
+          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+        </span>
+        <h2 className="text-3xl font-semibold md:text-5xl">Explorado con IA</h2>
+      </div>
 
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {items.map((item, index) => {
@@ -88,14 +93,18 @@ export default function AIGallery() {
             <div
               key={hasRealImages ? item : `placeholder-${item}`}
               data-gallery-item
-              className="relative aspect-square overflow-hidden rounded-xl bg-neutral-200"
+              className={`group relative aspect-square overflow-hidden rounded-xl bg-neutral-200 ${
+                isFloating ? 'ring-1 ring-accent/50' : ''
+              }`}
             >
               {hasRealImages ? (
                 <img
                   data-float-image={isFloating ? '' : undefined}
                   src={item}
                   alt={`Pieza generada con IA #${index + 1}`}
-                  className="h-full w-full object-cover"
+                  className={`h-full w-full object-cover ${
+                    isFloating ? '' : 'transition-transform duration-500 group-hover:scale-110'
+                  }`}
                   loading="lazy"
                 />
               ) : (
@@ -109,6 +118,12 @@ export default function AIGallery() {
                   <span>Imagen IA #{index + 1}</span>
                   <span className="text-[10px]">(agregar en src/assets/gallery/)</span>
                 </div>
+              )}
+
+              {hasRealImages && (
+                <span className="pointer-events-none absolute bottom-3 left-3 text-xs font-medium tracking-widest text-white opacity-0 drop-shadow transition-opacity duration-300 group-hover:opacity-100">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
               )}
             </div>
           );
