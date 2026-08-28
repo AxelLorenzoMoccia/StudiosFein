@@ -23,6 +23,14 @@ import TshirtHologram from './TshirtHologram';
  * balanceo vertical infinito e independiente del scroll para que se
  * sienta "viva"/aérea mientras gira y va cambiando de estampa.
  *
+ * "Proyectada por la pantalla": la laptop no desaparece, se corre a
+ * un costado (queda visible ahí) y la remera emerge diminuta desde el
+ * punto de la pantalla — con un flash de luz [data-mb-beam] — para
+ * después volar y crecer hasta su lugar del otro lado. Todo con `x`
+ * en `vw` (no `%`, que en GSAP es relativo al tamaño del propio
+ * elemento) para que el corrimiento sea real independientemente de lo
+ * chica que sea la tarjeta de la laptop o el wrapper de la remera.
+ *
  * Nota sobre animaciones infinitas dentro de un timeline scrubbeado:
  * un tween con `repeat: -1` DENTRO de `tl` no se movería solo (el
  * playhead de `tl` está atado 1:1 al scroll, no corre por su cuenta).
@@ -70,18 +78,29 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
       )
       .to('[data-mb-screen]', { opacity: 1, duration: 0.6 }, 'flip+=1.3')
 
-      // 3. La laptop pasa a segundo plano y la remera sube flotando
+      // 3. La laptop se corre a un costado (no desaparece — "se acomoda"
+      //    ahí, se queda visible) y un flash de la pantalla "proyecta"
+      //    la remera, que emerge chiquita desde ese punto y vuela hacia
+      //    su lugar del otro lado — como un holograma saliendo de la
+      //    pantalla, no una prenda que apareció de la nada.
       .addLabel('reveal', 'flip+=2')
-      .to('[data-mb-rig]', { scale: 0.88, opacity: 0.25, duration: 1 }, 'reveal')
+      .to('[data-mb-rig]', { x: '-15vw', scale: 0.72, duration: 1.1, ease: 'power2.inOut' }, 'reveal')
+      .fromTo(
+        '[data-mb-beam]',
+        { opacity: 0, scale: 0.6 },
+        { opacity: 1, scale: 1.6, duration: 0.45, ease: 'power1.out' },
+        'reveal+=0.55'
+      )
+      .to('[data-mb-beam]', { opacity: 0, duration: 0.5 }, 'reveal+=1')
       .fromTo(
         '[data-tshirt-wrap]',
-        { opacity: 0, y: 60, scale: 0.85 },
-        { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'back.out(1.4)' },
-        'reveal'
+        { opacity: 0, x: '-8vw', y: 10, scale: 0.12 },
+        { opacity: 1, x: '15vw', y: 0, scale: 1, duration: 1.3, ease: 'power3.out' },
+        'reveal+=0.45'
       )
 
       // 4. La remera gira (rotateY) mientras va cambiando de estampa
-      .addLabel('spin1', 'reveal+=1')
+      .addLabel('spin1', 'reveal+=1.9')
       .to('[data-tshirt]', { rotateY: 240, duration: 1.2, ease: 'none' }, 'spin1')
       .to('[data-print-a]', { opacity: 0, duration: 0.3 }, 'spin1')
       .to('[data-print-b]', { opacity: 1, duration: 0.3 }, 'spin1')
@@ -202,6 +221,20 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
                     FEIN
                   </span>
                 </div>
+
+                {/* Flash de proyección — brilla un instante justo cuando
+                    la remera "sale" de la pantalla, para vender la idea
+                    de holograma. Fuera de [data-mb-screen] (que tiene
+                    overflow hidden) para que el resplandor pueda
+                    asomarse más allá del bisel. */}
+                <div
+                  data-mb-beam
+                  className="pointer-events-none absolute inset-0 opacity-0"
+                  style={{
+                    background:
+                      'radial-gradient(circle, rgba(147,197,253,0.55) 0%, rgba(147,197,253,0) 70%)',
+                  }}
+                />
               </div>
 
               {/* Bisagra — línea de sombra donde la pantalla se clava en
