@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 .claude/
+
+# Skills de IA (ui-ux-pro-max, emil design/animation skills) — herramientas
+# locales para el asistente, no forman parte del sitio.
+.agents/
+skills-lock.json
