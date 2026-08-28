@@ -46,7 +46,7 @@ export default function IntroSection() {
   });
 
   return (
-    <section ref={scope} className="relative w-full bg-neutral-950">
+    <section ref={scope} className="relative w-full bg-fein-dark">
       <div data-intro-pin className="relative h-screen w-full overflow-hidden">
         <div
           data-intro-scale

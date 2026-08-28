@@ -47,5 +47,5 @@ export default function MacbookSequenceSection() {
     return <MacbookOpenReveal />;
   }
 
-  return <ImageSequenceViewer frameUrls={macbookFrames} scrollLength={4} className="bg-neutral-950" />;
+  return <ImageSequenceViewer frameUrls={macbookFrames} scrollLength={4} className="bg-fein-dark" />;
 }

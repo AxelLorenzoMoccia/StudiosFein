@@ -6,7 +6,7 @@ import TrustedByMarquee from './components/TrustedByMarquee';
 
 export default function App() {
   return (
-    <main className="bg-neutral-950">
+    <main className="bg-fein-dark">
       {/* 1. Intro — logo Fein, fade + zoom in */}
       <IntroSection />
 

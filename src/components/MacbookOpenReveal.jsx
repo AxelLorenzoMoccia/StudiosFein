@@ -123,7 +123,7 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
   }, [scrollLength, debug]);
 
   return (
-    <section ref={scope} className="relative w-full bg-neutral-950">
+    <section ref={scope} className="relative w-full bg-fein-dark">
       <div
         data-mb-pin
         className="relative flex h-screen w-full items-center justify-center overflow-hidden"

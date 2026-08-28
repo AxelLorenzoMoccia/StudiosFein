@@ -106,7 +106,7 @@ export default function TrustedByMarquee() {
   const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <section className="w-full bg-neutral-950 py-24">
+    <section className="w-full bg-fein-dark py-24">
       <style>{`
         @keyframes fein-marquee {
           0% { transform: translateX(0%); }

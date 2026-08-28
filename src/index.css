@@ -9,6 +9,28 @@
   Lenis, que sí es compatible con ScrollTrigger.
 */
 
+/*
+  Fondo oscuro "de marca": no es negro plano (#000 sobre toda la
+  pantalla se ve chato en monitores grandes), es negro + un casi-negro
+  apenas más claro en un par de zonas, más un grano finito (ruido SVG
+  vía feTurbulence) encima — la textura sutil que usan los sitios tipo
+  Apple para que el negro tenga profundidad sin leerse como "textura"
+  a simple vista. `body` la lleva de base, y `.bg-fein-dark` es la
+  misma regla para usar en las secciones oscuras (ver App.jsx,
+  IntroSection, WeavyTransition, MacbookOpenReveal, TrustedByMarquee)
+  en vez de un `bg-neutral-950` plano — no se puede hacer con
+  `@apply` porque no es una utilidad de Tailwind, es CSS a mano.
+*/
+body,
+.bg-fein-dark {
+  background-color: #070707;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(255, 255, 255, 0.025), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 110%, rgba(255, 255, 255, 0.018), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat, repeat;
+}
+
 body {
-  @apply bg-neutral-950 text-white antialiased;
+  @apply text-white antialiased;
 }
