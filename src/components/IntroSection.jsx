@@ -39,23 +39,39 @@ const LETTERS = ['S', 't', 'u', 'd', 'i', 'o', 's', 'F', 'e', 'i', 'n'];
  *     (contorno blanco tenue en reposo + brillo blanco intenso
  *     siguiendo al cursor) — el modo oscuro conserva el sitio tal cual
  *     estaba, no es una versión nueva.
- * Se arma con dos capas de texto idénticas superpuestas:
- *   1. Capa base: el relleno "de reposo" (negro en claro, casi blanco
- *      con contorno en oscuro).
- *   2. Capa de brillo: mismo texto, recortado con una `mask-image`
- *      radial-gradient centrada en la posición del mouse (variables
- *      CSS `--mx`/`--my` en píxeles, actualizadas a mano en cada
- *      `pointermove`). Fuera de ese círculo la máscara es transparente
- *      — solo se ve encendido el tramo cercano al cursor. El trazo es
- *      fino (2px) y el `drop-shadow` casi sin blur (3px) a propósito:
- *      antes tenía mucho blur (12-14px) y quedaba un halo difuso que
- *      no calzaba con la letra — así el borde queda ceñido a la forma
- *      real de cada letra, no una mancha de luz alrededor.
+ * Se arma con dos capas de texto idénticas superpuestas — y el ORDEN
+ * importa, no es decorativo:
+ *   1. Capa base: la de ARRIBA en el stacking (`relative z-10`),
+ *      relleno sólido "de reposo" (negro en claro, casi blanco con
+ *      contorno en oscuro).
+ *   2. Capa de brillo: la de ABAJO (`absolute`, sin z-index propio —
+ *      en CSS, un elemento `position: absolute` siempre se pinta
+ *      arriba de uno `static`, así que si esta capa quedaba SIN
+ *      `z-index` mientras la base tampoco tenía uno, la de brillo
+ *      terminaba ganando igual y pintándose ENCIMA de las letras, no
+ *      atrás — de ahí que el borde se viera "por arriba" en vez de
+ *      alrededor). Mismo texto que la base, con relleno sólido propio
+ *      (no transparente) y un trazo (`-webkit-text-stroke`) más ancho
+ *      que el de la base, recortado con una `mask-image`
+ *      radial-gradient centrada en la posición del mouse. Al quedar
+ *      DETRÁS de la base, el relleno opaco de la base tapa la mitad
+ *      interior del trazo (el trazo de un texto siempre queda
+ *      centrado sobre el borde de la letra, mitad adentro/mitad
+ *      afuera) — solo asoma la mitad exterior, como un halo ceñido a
+ *      la silueta real en vez de una línea que corta la letra al
+ *      medio. El relleno sólido en la capa de brillo (antes
+ *      transparente) es el mismo arreglo que ya se hizo en la capa
+ *      base para las letras con curvas que se cruzan ("e", "n"): sin
+ *      relleno detrás, el trazo se corta en esos puntos.
  *
  * Se actualizan las variables directo sobre el DOM (`style.setProperty`)
  * en vez de por estado de React — un `pointermove` dispara decenas de
  * veces por segundo y no tiene sentido re-renderizar el componente por
- * cada uno. No es una animación de GSAP en sí (es tracking de mouse
+ * cada uno. Además se agrupan con `requestAnimationFrame`: escribir la
+ * posición en cada evento crudo (sin agrupar) sobre un elemento tan
+ * grande con `filter`/`mask-image` (caros de recalcular) se sentía
+ * trabado — como mucho se actualiza una vez por frame, no una vez por
+ * evento. No es una animación de GSAP en sí (es tracking de mouse
  * 1:1), así que van con listeners nativos — pero sí viven dentro del
  * callback de `useGSAP` para reusar su cleanup automático al
  * desmontar (ver el JSDoc de ese hook).
@@ -126,16 +142,37 @@ export default function IntroSection() {
     const wordmark = wordmarkRef.current;
     const glow = glowRef.current;
 
-    const setGlowPosition = (clientX, clientY) => {
+    // Agrupado por rAF: `pointermove` puede disparar muchas más veces
+    // por segundo de las que la pantalla refresca — sin agrupar,
+    // cada evento crudo reescribía la posición y forzaba recalcular
+    // el `mask-image` sobre un texto enorme con `filter` encima, y se
+    // sentía trabado. Con esto, como mucho se escribe una vez por
+    // frame; los eventos de más entre frames solo actualizan
+    // `pendingClientX/Y`, no tocan el DOM.
+    let rafId = null;
+    let pendingClientX = 0;
+    let pendingClientY = 0;
+
+    const applyGlowPosition = () => {
+      rafId = null;
       const rect = wordmark.getBoundingClientRect();
-      glow.style.setProperty('--mx', `${clientX - rect.left}px`);
-      glow.style.setProperty('--my', `${clientY - rect.top}px`);
+      glow.style.setProperty('--mx', `${pendingClientX - rect.left}px`);
+      glow.style.setProperty('--my', `${pendingClientY - rect.top}px`);
     };
 
-    const handlePointerMove = (event) => setGlowPosition(event.clientX, event.clientY);
+    const handlePointerMove = (event) => {
+      pendingClientX = event.clientX;
+      pendingClientY = event.clientY;
+      if (rafId === null) rafId = requestAnimationFrame(applyGlowPosition);
+    };
+
     // Al salir, el centro se manda bien lejos — la máscara radial deja
     // de cubrir cualquier parte del wordmark y el brillo desaparece.
     const handlePointerLeave = () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
       glow.style.setProperty('--mx', '-9999px');
       glow.style.setProperty('--my', '-9999px');
     };
@@ -146,6 +183,7 @@ export default function IntroSection() {
     return () => {
       wordmark.removeEventListener('pointermove', handlePointerMove);
       wordmark.removeEventListener('pointerleave', handlePointerLeave);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   });
 
@@ -187,7 +225,7 @@ export default function IntroSection() {
         <div ref={wordmarkRef} className="relative px-4">
           <h1
             aria-label="StudiosFein"
-            className="flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-neutral-900 [-webkit-text-fill-color:rgb(23,23,23)] dark:text-white/90 dark:[-webkit-text-fill-color:rgba(255,255,255,0.92)] dark:[-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[5.5vw]"
+            className="relative z-10 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-neutral-900 [-webkit-text-fill-color:rgb(23,23,23)] dark:text-white/90 dark:[-webkit-text-fill-color:rgba(255,255,255,0.92)] dark:[-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[5.5vw]"
           >
             {LETTERS.map((letter, i) => (
               <span key={i} data-intro-letter aria-hidden="true" className="inline-block">
@@ -203,11 +241,16 @@ export default function IntroSection() {
           </h1>
 
           {/* Capa de brillo — copia exacta, puramente decorativa,
-              recortada por la máscara radial que sigue al mouse. */}
+              recortada por la máscara radial que sigue al mouse.
+              DETRÁS de la base (sin z-index propio, ver nota grande de
+              arriba) y con relleno sólido IGUAL al de la base — así el
+              relleno opaco de la base (que va arriba) tapa la mitad
+              interior del trazo, y solo asoma la mitad exterior como
+              un halo ceñido a la silueta real. */}
           <h1
             ref={glowRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-4 right-4 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,1)] [filter:drop-shadow(0_0_3px_rgba(212,184,118,0.9))] dark:[-webkit-text-stroke:2px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_3px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
+            className="pointer-events-none absolute inset-y-0 left-4 right-4 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-neutral-900 [-webkit-text-fill-color:rgb(23,23,23)] [-webkit-text-stroke:4px_rgba(176,139,79,1)] [filter:drop-shadow(0_0_3px_rgba(212,184,118,0.9))] dark:text-white/90 dark:[-webkit-text-fill-color:rgba(255,255,255,0.92)] dark:[-webkit-text-stroke:4px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_3px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
             style={{
               WebkitMaskImage:
                 'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
