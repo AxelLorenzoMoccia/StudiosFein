@@ -84,6 +84,33 @@
    inventar/recrear de memoria un logo o asset de marca que no fue provisto
    (ya es el patrón en `AIGallery.jsx` y `MacbookSequenceSection.jsx`,
    mantenerlo).
+9. **Todo video/frame generado por IA se revisa entero antes de integrarlo —
+   sin excepción.** 🔧 Ya pasó tres veces en este mismo repo (dos videos +
+   un lote de frames de Google Flow, todos para la secuencia Macbook): un
+   generador de video alucina logos de marcas reales — Apple, Nike, Patagonia,
+   Vans, Spotify, Tame Impala, React, HUF aparecieron todos juntos y
+   perfectamente legibles en un solo shot — o la interfaz de una app de
+   terceros con su propio ícono, no un placeholder gris. Antes de usar
+   cualquier frame/video generado por IA en el sitio:
+   - Mirar el primero, uno de la mitad y el último **como mínimo** — si el
+     material tiene varios "shots" distintos (ej. tapa cerrada → se abre →
+     pantalla), revisar al menos uno de cada segmento, no solo los extremos.
+     Acá mismo (frames de Google Flow) el problema estaba en el primer y
+     último segmento; el del medio salió limpio.
+   - Buscar específicamente: logos reconocibles (aunque sea un logo genuino
+     de Apple en la tapa de la laptop), UI de una app real (no una inventada
+     por la IA con texto ilegible), texto de marca legible aunque sea de una
+     marca chica.
+   - Si aparece una marca de terceros, **no se usa ese segmento** — ni tapando
+     el logo con un parche cosmético. Cubrir un logo entre varios no resuelve
+     los demás, y el resultado sigue sin ser un asset propio de Fein.
+   - Al pedirle a la herramienta de generación (Google Flow, Veo, Sora, etc.)
+     que regenere: ser explícito en el prompt — "sin logos ni marcas reales
+     de ningún tipo", "stickers en blanco o con formas/colores genéricos, sin
+     texto ni logos", "pantalla de laptop mostrando una interfaz genérica sin
+     texto legible". Los modelos de video alucinan marcas reales por defecto
+     cuando el concepto es genérico ("laptop con stickers") porque así es su
+     data de entrenamiento — hay que restringirlo a propósito.
 
 ## 2. Sistema visual de Fein (tokens ya decididos — no reinventar por página)
 
@@ -295,6 +322,9 @@ nativas móviles: haptics, safe-areas, bottom-nav, Dynamic Type.)
 
 ## 8. Checklist antes de dar por terminada una sección nueva
 
+- [ ] ¿Hay video/frames generados por IA nuevos? Revisados enteros — primero,
+      mitad y último de cada segmento — buscando logos/marcas reales o UI de
+      apps reales (§1.9, ya pasó tres veces).
 - [ ] ¿El wrapper de cualquier elemento pineado tiene altura fija +
       `overflow-hidden` a la vez? (§5 — el bug que ya pisamos dos veces)
 - [ ] ¿Las animaciones de entrada usan `fromTo` (no `set`+`to` separados)?

@@ -1,4 +1,8 @@
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from './components/Header';
+
+// DEBUG TEMPORAL — se revierte antes de terminar.
+if (typeof window !== 'undefined') window.__ST = ScrollTrigger;
 import IntroSection from './components/IntroSection';
 import StatementSection from './components/StatementSection';
 import MacbookSequenceSection from './components/MacbookSequenceSection';
