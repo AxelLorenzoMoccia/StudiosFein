@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGSAP } from '../hooks/useGSAP';
 import { useMagnetic } from '../hooks/useMagnetic';
+import PortfolioLightbox from './PortfolioLightbox';
 
 /* ============================================================
  *  ASSETS — mismas fotos que AIGallery.jsx
@@ -126,6 +127,20 @@ const LAYOUT = {
  * bien — el criterio de "no hace falta GSAP para algo ya
  * determinístico" es el mismo que se usó para el hover del logo en
  * IntroSection.jsx.
+ *
+ * Tarjeta central clickeable → abre PortfolioLightbox.jsx (la pieza
+ * ampliada, con su copy completo y un CTA de contacto). Antes tocar
+ * el centro no hacía nada — un carrusel que no llevaba a ningún lado.
+ * Las tarjetas de los costados siguen navegando al tocarlas
+ * (`goToSlide`), como ya hacían.
+ *
+ * Las tarjetas son `role="button"` + `tabIndex` + `onKeyDown` (Enter/
+ * Espacio), no un `<div onClick>` sin más — antes no eran operables
+ * por teclado en absoluto (ni Tab las alcanzaba). Se evitó envolver
+ * en un `<button>` real porque el reset de estilos default de ese
+ * elemento (fondo, borde, padding) hubiera pisado el layout absoluto
+ * de la tarjeta; el patrón role+tabIndex+keydown da la misma
+ * semántica sin ese arrastre.
  */
 export default function PortfolioCarousel({
   items = defaultItems,
@@ -136,6 +151,7 @@ export default function PortfolioCarousel({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const touchStartX = useRef(0);
   const total = items.length;
   const prevMagneticRef = useMagnetic();
@@ -178,12 +194,12 @@ export default function PortfolioCarousel({
   };
 
   useEffect(() => {
-    if (!autoplay || isHovered || total <= 1) return undefined;
+    if (!autoplay || isHovered || total <= 1 || lightboxIndex !== null) return undefined;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
 
     const interval = setInterval(nextSlide, autoplayDelay);
     return () => clearInterval(interval);
-  }, [autoplay, autoplayDelay, isHovered, nextSlide, total]);
+  }, [autoplay, autoplayDelay, isHovered, lightboxIndex, nextSlide, total]);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -279,11 +295,23 @@ export default function PortfolioCarousel({
               filter = 'brightness(0.55) blur(1px)';
             }
 
+            const title = `${item.titleLine1}${item.titleLine2 ? ` ${item.titleLine2}` : ''}`;
+            const handleActivate = () => (isCenter ? setLightboxIndex(idx) : goToSlide(idx));
+
             return (
               <div
                 key={item.img}
-                onClick={() => !isCenter && goToSlide(idx)}
-                className="absolute overflow-hidden rounded-[18px] border border-white/10 bg-neutral-900"
+                role="button"
+                tabIndex={0}
+                aria-label={isCenter ? `Ver más de ${title}` : `Ir a ${title}`}
+                onClick={handleActivate}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleActivate();
+                  }
+                }}
+                className="absolute overflow-hidden rounded-[18px] border border-white/10 bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-light"
                 style={{
                   width: `${layout.card.width}px`,
                   height: `${layout.card.height}px`,
@@ -296,15 +324,10 @@ export default function PortfolioCarousel({
                   boxShadow: isCenter
                     ? '0 25px 60px rgba(0,0,0,0.9), 0 0 35px rgba(176,139,79,0.25)'
                     : '0 15px 35px rgba(0,0,0,0.5)',
-                  cursor: isCenter ? 'default' : 'pointer',
+                  cursor: 'pointer',
                 }}
               >
-                <img
-                  src={item.img}
-                  alt={`${item.titleLine1}${item.titleLine2 ? ` ${item.titleLine2}` : ''}`}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                <img src={item.img} alt={title} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
 
                 <div
                   className="pointer-events-none absolute inset-0 z-10"
@@ -401,6 +424,10 @@ export default function PortfolioCarousel({
           ))}
         </div>
       </div>
+
+      {lightboxIndex !== null && (
+        <PortfolioLightbox item={items[lightboxIndex]} onClose={() => setLightboxIndex(null)} />
+      )}
     </section>
   );
 }
