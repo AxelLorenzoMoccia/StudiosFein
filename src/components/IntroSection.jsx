@@ -1,49 +1,72 @@
+import { useRef } from 'react';
 import { useGSAP } from '../hooks/useGSAP';
 
 const LETTERS = ['F', 'e', 'i', 'n'];
 
 /**
- * 1. INTRO — "hacer foco", sin salida
- * ======================================
+ * 1. INTRO — "hacer foco", sin salida, wordmark de "hilo"
+ * ==========================================================
  * El wordmark entra desenfocado, letra por letra, y hace foco con
  * precisión — como si algo impreciso se resolviera en algo exacto.
  * Debajo se traza una línea (el acento de marca) y recién ahí aparece
  * la tagline, en ese orden, sin apuro.
  *
- * A pedido explícito: el logo NO se desvanece al scrollear. Antes
- * había una segunda mitad de la animación (atada al scroll, con pin)
- * que la desenfocaba y desvanecía de nuevo al salir — se sacó por
- * completo. Ahora es una sección normal: aparece una vez al cargar
- * y, al scrollear, se va de pantalla como cualquier otro contenido
- * (sin pin, sin scrub, sin fade). Por eso ya no hace falta la
- * estructura de dos capas para el pin-spacer que tenían las
- * versiones anteriores — es un simple `h-screen` centrado.
+ * El logo NO se desvanece al scrollear (a pedido explícito) — es una
+ * sección normal, sin pin ni scroll-scrub: aparece una vez al cargar
+ * y, al scrollear, se va de pantalla como cualquier otro contenido.
  *
  * Accesibilidad: partir "Fein" en 4 <span> (para el stagger letra por
  * letra) rompe cómo lo lee un screen reader si no se corrige — por
- * eso el `aria-label="Fein"` vive en el <h1> y cada letra individual
- * es `aria-hidden`.
+ * eso el `aria-label="Fein"` vive en el <h1> base y cada letra
+ * individual es `aria-hidden`. El segundo <h1> (la capa de brillo) es
+ * enteramente `aria-hidden` — es una copia puramente decorativa.
  *
  * Fondo con atmósfera de color: nada de negro plano — dos glows
  * grandes, muy desenfocados, en dos tonos del MISMO dorado de marca
- * (`accent`/`accent-light` — no se suma un segundo acento, solo varía
- * la luminosidad, regla de la guía de diseño), a la deriva con un
- * loop lento e independiente del scroll.
+ * (`accent`/`accent-light`), a la deriva con un loop lento e
+ * independiente del scroll.
  *
- * El brillo al hover (borde de las letras iluminándose más blanco) es
- * CSS puro — mismo criterio que el resto de los hover del sitio
- * (ContactSection, Header, ServicesSection): un hover simple y
- * determinístico no necesita GSAP. Dos `drop-shadow` apilados (uno
- * ajustado, uno más difuso) en vez de uno solo, para que el brillo
- * tenga un núcleo definido y un halo suave alrededor — se nota más
- * "con intención" que un blur plano. `drop-shadow` (no `box-shadow`)
- * porque sigue la silueta real de las letras, no un rectángulo.
+ * EFECTO "HILO" que se ilumina cerca del mouse
+ * ----------------------------------------------
+ * No es un glow parejo a todo el logo al hacer hover — es un hilo/
+ * contorno fino que rodea cada letra, y SOLO el tramo de ese hilo
+ * cercano al cursor se ilumina de blanco más intenso, siguiendo al
+ * mouse en tiempo real (el efecto tipo "neón" que se ve en librerías
+ * de componentes como 21st.dev). Se arma con dos capas de texto
+ * idénticas superpuestas:
+ *
+ *   1. Capa base: letras con relleno transparente y solo un trazo
+ *      (`-webkit-text-stroke`) tenue — el "hilo" siempre visible, en
+ *      reposo.
+ *   2. Capa de brillo: mismas letras, mismo trazo pero blanco puro +
+ *      `drop-shadow` (el "hilo encendido"), recortada con una
+ *      `mask-image` radial-gradient centrada en la posición del mouse
+ *      (variables CSS `--mx`/`--my` en píxeles, actualizadas a mano
+ *      en cada `pointermove` sobre el wordmark). Fuera de ese círculo,
+ *      la máscara es transparente — por eso solo se ve encendido el
+ *      tramo cercano al cursor, no la letra entera.
+ *
+ * Se actualizan las variables directo sobre el DOM (`style.setProperty`)
+ * en vez de por estado de React — un `pointermove` dispara decenas de
+ * veces por segundo y no tiene sentido re-renderizar el componente por
+ * cada uno (mismo criterio que usa el resto del sitio para todo lo que
+ * GSAP anima vía selector, sin pasar por React state). No es una
+ * animación de GSAP en sí (es tracking de mouse 1:1, no algo que deba
+ * interpolarse con un ease), así que van con listeners nativos — pero
+ * sí viven dentro del callback de `useGSAP` para reusar su cleanup
+ * automático al desmontar (ver el JSDoc de ese hook).
  */
 export default function IntroSection() {
+  const wordmarkRef = useRef(null);
+  const glowRef = useRef(null);
+
   const scope = useGSAP((gsap) => {
     gsap.set('[data-intro-letter]', { opacity: 0, filter: 'blur(20px)', y: 12 });
     gsap.set('[data-intro-line]', { scaleX: 0 });
     gsap.set('[data-intro-tagline]', { opacity: 0, y: 10 });
+    // El hilo encendido arranca invisible: no tiene sentido que se vea
+    // "prendido" antes de que las letras terminen de enfocar.
+    gsap.set(glowRef.current, { opacity: 0 });
 
     // No hace falta guardar la referencia ni matarlas manualmente: al
     // vivir dentro del gsap.context() de useGSAP, `ctx.revert()` las
@@ -88,7 +111,38 @@ export default function IntroSection() {
       // asentando — se solapan un poco para que no se sienta como una
       // lista de pasos separados, sino una sola secuencia continua.
       .to('[data-intro-line]', { scaleX: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.5')
-      .to('[data-intro-tagline]', { opacity: 1, y: 0, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.7');
+      .to('[data-intro-tagline]', { opacity: 1, y: 0, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.7')
+      // El hilo queda "habilitado" (listo para reaccionar al mouse) al
+      // mismo tiempo que aparece la tagline — cierra la secuencia.
+      .to(glowRef.current, { opacity: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.7');
+
+    // Tramo del hilo cercano al mouse: mueve el centro de la máscara
+    // radial de la capa de brillo a la posición del cursor, relativa
+    // al propio wordmark (no a la ventana).
+    const wordmark = wordmarkRef.current;
+    const glow = glowRef.current;
+
+    const setGlowPosition = (clientX, clientY) => {
+      const rect = wordmark.getBoundingClientRect();
+      glow.style.setProperty('--mx', `${clientX - rect.left}px`);
+      glow.style.setProperty('--my', `${clientY - rect.top}px`);
+    };
+
+    const handlePointerMove = (event) => setGlowPosition(event.clientX, event.clientY);
+    // Al salir, el centro se manda bien lejos — la máscara radial deja
+    // de cubrir cualquier parte del hilo y el brillo desaparece.
+    const handlePointerLeave = () => {
+      glow.style.setProperty('--mx', '-9999px');
+      glow.style.setProperty('--my', '-9999px');
+    };
+
+    wordmark.addEventListener('pointermove', handlePointerMove);
+    wordmark.addEventListener('pointerleave', handlePointerLeave);
+
+    return () => {
+      wordmark.removeEventListener('pointermove', handlePointerMove);
+      wordmark.removeEventListener('pointerleave', handlePointerLeave);
+    };
   });
 
   return (
@@ -110,16 +164,42 @@ export default function IntroSection() {
       </div>
 
       <div className="relative flex flex-col items-center gap-6">
-        <h1
-          aria-label="Fein"
-          className="flex select-none text-[26vw] font-semibold leading-none tracking-tight text-white transition-[filter] duration-500 ease-out [filter:drop-shadow(0_0_0px_rgba(255,255,255,0))_drop-shadow(0_0_0px_rgba(255,255,255,0))] hover:[filter:drop-shadow(0_0_18px_rgba(255,255,255,0.9))_drop-shadow(0_0_46px_rgba(255,255,255,0.45))] md:text-[18vw]"
-        >
-          {LETTERS.map((letter, i) => (
-            <span key={i} data-intro-letter aria-hidden="true" className="inline-block">
-              {letter}
-            </span>
-          ))}
-        </h1>
+        {/* Wordmark de "hilo": dos <h1> idénticos superpuestos — ver
+            nota grande arriba. `ref={wordmarkRef}` es el área que
+            escucha el mouse; su bounding box es exactamente la de las
+            letras, así que el efecto solo reacciona sobre ellas. */}
+        <div ref={wordmarkRef} className="relative">
+          <h1
+            aria-label="Fein"
+            className="flex select-none text-[26vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[18vw]"
+          >
+            {LETTERS.map((letter, i) => (
+              <span key={i} data-intro-letter aria-hidden="true" className="inline-block">
+                {letter}
+              </span>
+            ))}
+          </h1>
+
+          {/* Capa de brillo — copia exacta, puramente decorativa,
+              recortada por la máscara radial que sigue al mouse. */}
+          <h1
+            ref={glowRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex select-none text-[26vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2.5px_rgba(255,255,255,1)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[18vw]"
+            style={{
+              WebkitMaskImage:
+                'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
+              maskImage:
+                'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
+            }}
+          >
+            {LETTERS.map((letter, i) => (
+              <span key={i} className="inline-block">
+                {letter}
+              </span>
+            ))}
+          </h1>
+        </div>
 
         <span
           data-intro-line
