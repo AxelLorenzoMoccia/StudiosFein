@@ -24,18 +24,17 @@ const logoModules = import.meta.glob('../assets/logos/*.{svg,png,webp}', {
   import: 'default',
 });
 
-// Nombre → sitio oficial de la marca. Cubre los placeholders de abajo;
-// sumar acá las marcas reales cuando se agreguen los logos.
-const BRAND_LINKS = {
-  Nike: 'https://www.nike.com',
-  Adidas: 'https://www.adidas.com',
-  Zara: 'https://www.zara.com',
-  'H&M': 'https://www2.hm.com',
-  "Levi's": 'https://www.levi.com',
-  Uniqlo: 'https://www.uniqlo.com',
-  Gap: 'https://www.gap.com',
-  Bershka: 'https://www.bershka.com',
-};
+// Nombre → sitio oficial del cliente REAL correspondiente. Vacío por
+// default a propósito: acá antes vivían Nike/Adidas/Zara/H&M/Levi's/
+// Uniqlo/Gap/Bershka con link a sus sitios oficiales, como si esta
+// sección ("Quienes confiaron en nosotros") estuviera listando
+// clientes reales de Fein — eso es una afirmación falsa (ninguna de
+// esas marcas es cliente de esta agencia) y encima llevaba tráfico
+// real a sus sitios. Mismo criterio de "no fabricar contenido que no
+// fue provisto" que ya se sigue en el resto del sitio (DESIGN.md
+// §1.8/§7) — completar esto con clientes reales cuando existan, con la
+// key = nombre del archivo del logo (sin extensión).
+const BRAND_LINKS = {};
 
 const realLogos = Object.keys(logoModules)
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
@@ -44,16 +43,18 @@ const realLogos = Object.keys(logoModules)
     return { src: logoModules[key], name, url: BRAND_LINKS[name] };
   });
 
-// Placeholders de texto — nombres de marcas de indumentaria conocidas,
-// como wordmark tipográfico propio (no se reproduce ningún isotipo/
-// logo real de marca, solo el nombre en texto plano) para no depender
-// de artwork con derechos de autor mientras no estén los logos reales.
-const PLACEHOLDER_BRANDS = Object.keys(BRAND_LINKS);
+// Placeholder honesto mientras no haya logos reales — un wordmark
+// genérico "CLIENTE 01", "CLIENTE 02"... en vez de nombrar marcas
+// reales (ver el comentario de BRAND_LINKS arriba). Sin URL: un
+// cliente placeholder no tiene sitio real al que mandar a nadie.
+const PLACEHOLDER_COUNT = 8;
+const PLACEHOLDER_BRANDS = Array.from(
+  { length: PLACEHOLDER_COUNT },
+  (_, i) => `CLIENTE ${String(i + 1).padStart(2, '0')}`
+);
 
 const hasRealLogos = realLogos.length > 0;
-const logos = hasRealLogos
-  ? realLogos
-  : PLACEHOLDER_BRANDS.map((name) => ({ name, url: BRAND_LINKS[name] }));
+const logos = hasRealLogos ? realLogos : PLACEHOLDER_BRANDS.map((name) => ({ name, url: undefined }));
 
 // Se duplica la lista para que el loop de la animación sea perfecto:
 // el track anima de translateX(0%) a translateX(-50%) — si el

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Header from './components/Header';
 import PageLoader from './components/PageLoader';
 import CustomCursor from './components/CustomCursor';
+import ScrollProgress from './components/ScrollProgress';
 import IntroSection from './components/IntroSection';
 import StatementSection from './components/StatementSection';
 import MacbookSequenceSection from './components/MacbookSequenceSection';
@@ -39,6 +40,12 @@ export default function App() {
       {/* Cursor a medida — se auto-desactiva solo en touch/reduced-motion,
           ver CustomCursor.jsx */}
       <CustomCursor />
+
+      {/* Línea de progreso de scroll, pegada al borde superior — ver
+          ScrollProgress.jsx. Antes que el Header en el DOM porque
+          ambos son `fixed`, sin relación de layout entre sí; el
+          z-index de cada uno decide el apilado, no el orden acá. */}
+      <ScrollProgress />
 
       {/* Nav fija — se auto-invierte según la sección (ver Header.jsx) */}
       <Header />
