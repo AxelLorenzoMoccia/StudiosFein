@@ -28,12 +28,43 @@ const LETTERS = ['F', 'e', 'i', 'n'];
  * letra) rompe cómo lo lee un screen reader si no se corrige — por
  * eso el `aria-label="Fein"` vive en el <h1> y cada letra individual
  * es `aria-hidden`.
+ *
+ * Fondo con atmósfera de color: nada de negro plano — dos glows
+ * grandes, muy desenfocados, en dos tonos del MISMO dorado de marca
+ * (`accent`/`accent-light` — no se suma un segundo acento, solo varía
+ * la luminosidad, regla de la guía de diseño), a la deriva con un
+ * loop lento e independiente del scroll (igual técnica que el
+ * balanceo de la remera en MacbookOpenReveal.jsx: un `repeat:-1`
+ * suelto, no metido en el timeline scrubbeado).
  */
 export default function IntroSection() {
   const scope = useGSAP((gsap) => {
     gsap.set('[data-intro-letter]', { opacity: 0, filter: 'blur(20px)', y: 12 });
     gsap.set('[data-intro-line]', { scaleX: 0 });
     gsap.set('[data-intro-tagline]', { opacity: 0, y: 10 });
+
+    // No hace falta guardar la referencia ni matarlas manualmente: al
+    // vivir dentro del gsap.context() de useGSAP, `ctx.revert()` las
+    // limpia solas al desmontar.
+    gsap.to('[data-intro-glow-a]', {
+      x: '12%',
+      y: '-10%',
+      scale: 1.15,
+      duration: 9,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    });
+    gsap.to('[data-intro-glow-b]', {
+      x: '-14%',
+      y: '10%',
+      scale: 1.2,
+      duration: 11,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+      delay: 1.2,
+    });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -83,9 +114,22 @@ export default function IntroSection() {
   return (
     <section ref={scope} className="relative w-full bg-fein-dark">
       <div data-intro-pin className="relative h-screen w-full overflow-hidden">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div
+            data-intro-glow-a
+            className="absolute left-[8%] top-[12%] h-[60vmax] w-[60vmax] rounded-full opacity-50 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #d4b876 0%, transparent 70%)' }}
+          />
+          <div
+            data-intro-glow-b
+            className="absolute bottom-[8%] right-[8%] h-[50vmax] w-[50vmax] rounded-full opacity-40 blur-[120px]"
+            style={{ background: 'radial-gradient(circle, #b08b4f 0%, transparent 70%)' }}
+          />
+        </div>
+
         <div
           data-intro-scale
-          className="flex h-full w-full flex-col items-center justify-center gap-6 will-change-transform"
+          className="relative flex h-full w-full flex-col items-center justify-center gap-6 will-change-transform"
         >
           <h1
             aria-label="Fein"
