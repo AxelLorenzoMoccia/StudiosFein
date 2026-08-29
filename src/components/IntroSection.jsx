@@ -171,7 +171,19 @@ export default function IntroSection() {
         {/* Wordmark: dos <h1> idénticos superpuestos — ver nota grande
             arriba. `ref={wordmarkRef}` es el área que escucha el
             mouse; su bounding box es exactamente la de las letras, así
-            que el efecto solo reacciona sobre ellas. */}
+            que el efecto solo reacciona sobre ellas.
+
+            OJO: la capa de brillo usa `inset-y-0 left-4 right-4`, NO
+            `inset-0` — este wrapper tiene `px-4`, y un hijo con
+            `position: absolute` ignora el padding del padre para su
+            propio posicionamiento (su "containing block" es la
+            padding-box completa, sin el padding descontado). Con
+            `inset-0` la capa de brillo quedaba corrida 16px a la
+            izquierda de las letras reales (confirmado con
+            getBoundingClientRect: `glow.left - base.left === -16`) —
+            el borde se iluminaba al lado de cada letra, no encima.
+            `left-4`/`right-4` replican el mismo `px-4` a mano para que
+            las dos capas ocupen exactamente la misma caja. */}
         <div ref={wordmarkRef} className="relative px-4">
           <h1
             aria-label="StudiosFein"
@@ -195,7 +207,7 @@ export default function IntroSection() {
           <h1
             ref={glowRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,1)] [filter:drop-shadow(0_0_3px_rgba(212,184,118,0.9))] dark:[-webkit-text-stroke:2px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_3px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
+            className="pointer-events-none absolute inset-y-0 left-4 right-4 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,1)] [filter:drop-shadow(0_0_3px_rgba(212,184,118,0.9))] dark:[-webkit-text-stroke:2px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_3px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
             style={{
               WebkitMaskImage:
                 'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
