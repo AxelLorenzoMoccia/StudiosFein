@@ -34,3 +34,20 @@ body,
 body {
   @apply font-sans text-white antialiased;
 }
+
+/*
+  Nunca scroll horizontal (regla ALTA de accesibilidad/UX, DESIGN.md
+  §6). El sitio tiene un par de elementos ANCHOS A PROPÓSITO para
+  loops infinitos (la cresta de la ola en WeavyTransition, el tren de
+  TrustedByMarquee) — cada uno ya vive dentro de su propio
+  `overflow-hidden`, pero terminaban empujando el ancho scrolleable
+  del DOCUMENTO igual (encontrado con
+  `document.documentElement.scrollWidth` > `clientWidth` en el
+  navegador real). Este es el cinturón de seguridad a nivel body: no
+  afecta el scroll VERTICAL (del que depende todo el sitio), solo
+  corta cualquier desborde horizontal, venga de donde venga.
+*/
+html,
+body {
+  overflow-x: hidden;
+}

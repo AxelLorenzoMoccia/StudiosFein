@@ -34,6 +34,7 @@ export default function TshirtHologram() {
   return (
     <div
       data-tshirt-wrap
+      aria-hidden="true"
       className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0"
       style={{ perspective: '1200px' }}
     >

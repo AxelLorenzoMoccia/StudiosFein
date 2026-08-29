@@ -157,6 +157,8 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
     <section ref={scope} className="relative w-full bg-fein-dark">
       <div
         data-mb-pin
+        role="img"
+        aria-label="Una Macbook con stickers de Fein se abre y revela una remera blanca en el aire, que va cambiando de estampas."
         className="relative flex h-screen w-full items-center justify-center overflow-hidden"
       >
         {/* ---------------- Laptop ---------------- */}

@@ -46,7 +46,7 @@ export default function WeavyTransition() {
 
   return (
     <section ref={scope} className="relative h-[70vh] w-full overflow-hidden bg-fein-dark">
-      <div data-wave-curtain className="absolute inset-0">
+      <div data-wave-curtain aria-hidden="true" className="absolute inset-0">
         {/* Cresta ondulada: el mismo path repetido x2 en ancho para loopear sin cortes */}
         <svg
           data-wave-crest

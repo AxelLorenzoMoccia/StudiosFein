@@ -125,6 +125,7 @@ export default function MacbookVideoScrub({ videoSrc, scrollLength = 3.5, debug 
           muted
           playsInline
           preload="auto"
+          aria-label="Una Macbook con stickers de Fein se abre y revela una remera blanca en el aire, que va cambiando de estampas."
           onLoadedMetadata={() => setIsReady(true)}
           onError={() => setHasError(true)}
           className="h-full w-full object-cover"

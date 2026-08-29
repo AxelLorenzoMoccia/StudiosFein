@@ -67,7 +67,14 @@ const macbookVideoSrc = videoKeys.length ? videoModules[videoKeys[0]] : null;
  */
 export default function MacbookSequenceSection() {
   if (macbookFrames.length) {
-    return <ImageSequenceViewer frameUrls={macbookFrames} scrollLength={4} className="bg-fein-dark" />;
+    return (
+      <ImageSequenceViewer
+        frameUrls={macbookFrames}
+        scrollLength={4}
+        className="bg-fein-dark"
+        ariaLabel="Una Macbook con stickers de Fein se abre y revela una remera blanca en el aire, que va cambiando de estampas."
+      />
+    );
   }
 
   if (macbookVideoSrc) {

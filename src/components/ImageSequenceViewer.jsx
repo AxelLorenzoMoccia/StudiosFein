@@ -63,6 +63,10 @@ export default function ImageSequenceViewer({
   loader = null,
   onFramesLoaded,
   debug = false,
+  // Descripción de lo que muestra la secuencia — un <canvas> es
+  // invisible para lectores de pantalla sin esto (regla CRÍTICA de
+  // accesibilidad: alt text descriptivo en imágenes con significado).
+  ariaLabel = 'Secuencia animada',
 }) {
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
@@ -220,7 +224,12 @@ export default function ImageSequenceViewer({
   // La altura de 100vh vive en el propio canvas.
   return (
     <div ref={scope} className={`relative w-full bg-black ${className}`}>
-      <canvas ref={canvasRef} className={`block h-screen w-full ${canvasClassName}`} />
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label={ariaLabel}
+        className={`block h-screen w-full ${canvasClassName}`}
+      />
 
       {!isReady &&
         (loader ?? (

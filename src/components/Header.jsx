@@ -8,6 +8,16 @@
  * como AIGallery/ServicesSection) sin necesidad de detectar con JS en
  * qué sección está el usuario. Es el mismo truco que usan sitios como
  * Stripe/Linear para una nav que "sabe" adaptarse sola.
+ *
+ * `focus-visible:outline` explícito en el link: el anillo de foco
+ * default del navegador también entra en el `mix-blend-mode` del
+ * header (hereda de un ancestro con ese blend), así que puede salir
+ * con un color raro o directamente invisible según la sección de
+ * fondo. Un outline blanco explícito con offset no depende de esa
+ * mezcla — sigue siendo visible para navegación por teclado en
+ * cualquier sección (regla CRÍTICA de accesibilidad, DESIGN.md §6:
+ * "nunca outline: none sin un reemplazo visible" — acá directamente
+ * no se saca el default, se refuerza).
  */
 export default function Header() {
   return (
@@ -20,7 +30,10 @@ export default function Header() {
           mix-blend-mode: difference en el header, cualquier color que no
           sea blanco/negro sale distorsionado al mezclarse con el fondo.
           El "acento" queda en el subrayado animado en vez del color. */}
-      <a href="#contacto" className="group pointer-events-auto text-sm font-medium tracking-wide text-white">
+      <a
+        href="#contacto"
+        className="group pointer-events-auto rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      >
         Hablemos
         <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
       </a>
