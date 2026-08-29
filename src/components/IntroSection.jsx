@@ -46,7 +46,11 @@ const LETTERS = ['S', 't', 'u', 'd', 'i', 'o', 's', 'F', 'e', 'i', 'n'];
  *      radial-gradient centrada en la posición del mouse (variables
  *      CSS `--mx`/`--my` en píxeles, actualizadas a mano en cada
  *      `pointermove`). Fuera de ese círculo la máscara es transparente
- *      — solo se ve encendido el tramo cercano al cursor.
+ *      — solo se ve encendido el tramo cercano al cursor. El trazo es
+ *      fino (2px) y el `drop-shadow` casi sin blur (3px) a propósito:
+ *      antes tenía mucho blur (12-14px) y quedaba un halo difuso que
+ *      no calzaba con la letra — así el borde queda ceñido a la forma
+ *      real de cada letra, no una mancha de luz alrededor.
  *
  * Se actualizan las variables directo sobre el DOM (`style.setProperty`)
  * en vez de por estado de React — un `pointermove` dispara decenas de
@@ -191,7 +195,7 @@ export default function IntroSection() {
           <h1
             ref={glowRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,0.9)] [filter:drop-shadow(0_0_14px_rgba(212,184,118,0.85))] dark:[-webkit-text-stroke:2.5px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
+            className="pointer-events-none absolute inset-0 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,1)] [filter:drop-shadow(0_0_3px_rgba(212,184,118,0.9))] dark:[-webkit-text-stroke:2px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_3px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
             style={{
               WebkitMaskImage:
                 'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
