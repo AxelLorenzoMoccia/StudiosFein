@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './components/Header';
 import PageLoader from './components/PageLoader';
+import CustomCursor from './components/CustomCursor';
 import IntroSection from './components/IntroSection';
 import StatementSection from './components/StatementSection';
 import MacbookSequenceSection from './components/MacbookSequenceSection';
@@ -35,6 +36,10 @@ export default function App() {
 
   return (
     <main className="bg-fein-dark">
+      {/* Cursor a medida — se auto-desactiva solo en touch/reduced-motion,
+          ver CustomCursor.jsx */}
+      <CustomCursor />
+
       {/* Nav fija — se auto-invierte según la sección (ver Header.jsx) */}
       <Header />
 

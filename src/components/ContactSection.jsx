@@ -1,4 +1,5 @@
 import { useGSAP } from '../hooks/useGSAP';
+import { useMagnetic } from '../hooks/useMagnetic';
 
 // Placeholder — reemplazar por el mail real de la agencia cuando lo tengan.
 const CONTACT_EMAIL = 'hola@fein.com';
@@ -20,8 +21,19 @@ const CONTACT_EMAIL = 'hola@fein.com';
  * momento de crear el tween, y bajo el doble-montaje de React
  * StrictMode en dev ese valor puede leerse mal. `fromTo()` no tiene
  * esa ambigüedad — el "hacia dónde" queda explícito, sin adivinar.
+ *
+ * `useMagnetic()` vive en un <span> ENVOLVIENDO el botón, no en el
+ * botón mismo — mismo motivo que la nota grande en IntroSection.jsx
+ * sobre por qué dos tweens de GSAP nunca deben tocar el mismo
+ * elemento: el botón ya es blanco de la animación de entrada (el
+ * `fromTo` de `[data-contact-reveal]`, que anima su `y`). Aunque en
+ * la práctica nunca compiten a la vez (el hover magnético recién
+ * puede pasar después de que la entrada ya terminó), separarlos en
+ * dos elementos distintos hace que la superposición sea imposible
+ * por construcción, no por que "en teoría no debería pasar".
  */
 export default function ContactSection() {
+  const magneticRef = useMagnetic();
   const scope = useGSAP((gsap) => {
     gsap.fromTo(
       '[data-contact-reveal]',
@@ -53,17 +65,25 @@ export default function ContactSection() {
       <p data-contact-reveal className="mx-auto mt-6 max-w-xl text-neutral-400">
         Contanos qué estás armando y vemos juntos cómo darle forma.
       </p>
-      <a
-        data-contact-reveal
-        href={`mailto:${CONTACT_EMAIL}`}
-        aria-label={`Contactar por mail a ${CONTACT_EMAIL}`}
-        className="group mt-10 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold tracking-wide text-neutral-950 transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white"
-      >
-        Contactar
-        <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
-          →
+      {/* Dos wrappers, no uno: el de afuera es el blanco de la
+          animación de ENTRADA (opacity/y, `data-contact-reveal`), el
+          de adentro es el blanco del hover MAGNÉTICO (x/y por mouse,
+          `magneticRef`) — nunca el mismo elemento para las dos, por
+          la nota grande de arriba. */}
+      <span data-contact-reveal className="mt-10 inline-block">
+        <span ref={magneticRef} className="inline-block">
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            aria-label={`Contactar por mail a ${CONTACT_EMAIL}`}
+            className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold tracking-wide text-neutral-950 transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white"
+          >
+            Contactar
+            <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+              →
+            </span>
+          </a>
         </span>
-      </a>
+      </span>
     </section>
   );
 }

@@ -51,3 +51,16 @@ html,
 body {
   overflow-x: hidden;
 }
+
+/*
+  Cursor a medida (CustomCursor.jsx): solo oculta el cursor del
+  sistema cuando ese componente ya confirmó que hay un reemplazo
+  andando (mouse de verdad, sin prefers-reduced-motion) — la clase la
+  agrega/saca el propio componente por JS. Nunca es un `cursor: none`
+  incondicional en el CSS: si el JS no corre por lo que sea, el
+  cursor normal del sistema sigue ahí, nunca desaparece sin más.
+*/
+.fein-custom-cursor,
+.fein-custom-cursor * {
+  cursor: none;
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGSAP } from '../hooks/useGSAP';
+import { useMagnetic } from '../hooks/useMagnetic';
 
 /* ============================================================
  *  ASSETS — mismas fotos que AIGallery.jsx
@@ -137,6 +138,8 @@ export default function PortfolioCarousel({
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
   const touchStartX = useRef(0);
   const total = items.length;
+  const prevMagneticRef = useMagnetic();
+  const nextMagneticRef = useMagnetic();
 
   // `[data-portfolio-section]` vive en el div de CONTENIDO, no en el
   // <section ref={scope}> de más afuera — el selector de
@@ -350,24 +353,37 @@ export default function PortfolioCarousel({
           })}
         </div>
 
-        {/* Flechas */}
-        <button
-          type="button"
-          onClick={prevSlide}
-          aria-label="Diseño anterior"
-          className="absolute left-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white shadow-[0_8px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:left-6"
-        >
-          <ChevronLeft aria-hidden="true" />
-        </button>
+        {/* Flechas — el posicionamiento (top-1/2 + -translate-y-1/2) vive
+            en un <div> envolvente, no en el <button>: el <button> es el
+            blanco del hover magnético (useMagnetic anima su transform
+            x/y), y un `transform` de Tailwind en el mismo elemento se
+            pisaría con el que escribe GSAP inline (mismo motivo por el
+            que el CTA de ContactSection usa dos wrappers separados). Por
+            el mismo choque se sacó el `hover:scale-105` — el tirón
+            magnético ya es el feedback de hover acá. */}
+        <div className="absolute left-2 top-1/2 z-40 -translate-y-1/2 sm:left-6">
+          <button
+            ref={prevMagneticRef}
+            type="button"
+            onClick={prevSlide}
+            aria-label="Diseño anterior"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white shadow-[0_8px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            <ChevronLeft aria-hidden="true" />
+          </button>
+        </div>
 
-        <button
-          type="button"
-          onClick={nextSlide}
-          aria-label="Diseño siguiente"
-          className="absolute right-2 top-1/2 z-40 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white shadow-[0_8px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:right-6"
-        >
-          <ChevronRight aria-hidden="true" />
-        </button>
+        <div className="absolute right-2 top-1/2 z-40 -translate-y-1/2 sm:right-6">
+          <button
+            ref={nextMagneticRef}
+            type="button"
+            onClick={nextSlide}
+            aria-label="Diseño siguiente"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white shadow-[0_8px_24px_rgba(0,0,0,0.4)] backdrop-blur-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            <ChevronRight aria-hidden="true" />
+          </button>
+        </div>
 
         {/* Paginación */}
         <div className="z-30 mt-8 flex items-center justify-center gap-2">

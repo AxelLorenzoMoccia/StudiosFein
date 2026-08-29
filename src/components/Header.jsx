@@ -1,3 +1,5 @@
+import { useMagnetic } from '../hooks/useMagnetic';
+
 /**
  * HEADER
  * -------
@@ -18,8 +20,15 @@
  * cualquier sección (regla CRÍTICA de accesibilidad, DESIGN.md §6:
  * "nunca outline: none sin un reemplazo visible" — acá directamente
  * no se saca el default, se refuerza).
+ *
+ * `useMagnetic()`: el link "tira" levemente hacia el mouse al
+ * acercarse (se auto-desactiva en touch/reduced-motion, ver ese
+ * hook) — uno de los pocos CTA del sitio con este tratamiento, no
+ * todo lo clickeable.
  */
 export default function Header() {
+  const magneticRef = useMagnetic();
+
   return (
     <header
       className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-16"
@@ -31,8 +40,9 @@ export default function Header() {
           sea blanco/negro sale distorsionado al mezclarse con el fondo.
           El "acento" queda en el subrayado animado en vez del color. */}
       <a
+        ref={magneticRef}
         href="#contacto"
-        className="group pointer-events-auto rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        className="group pointer-events-auto inline-block rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
         Hablemos
         <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
