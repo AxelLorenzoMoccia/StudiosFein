@@ -1,4 +1,5 @@
 import { useMagnetic } from '../hooks/useMagnetic';
+import ThemeToggle from './ThemeToggle';
 
 /**
  * HEADER
@@ -25,6 +26,11 @@ import { useMagnetic } from '../hooks/useMagnetic';
  * acercarse (se auto-desactiva en touch/reduced-motion, ver ese
  * hook) — uno de los pocos CTA del sitio con este tratamiento, no
  * todo lo clickeable.
+ *
+ * `<ThemeToggle />` vive agrupado con "Hablemos" en un mismo
+ * contenedor a la derecha — `justify-between` en el <header> solo
+ * separa DOS hijos directos (wordmark ↔ resto), así que todo lo que
+ * va a la derecha ahora comparte un wrapper con `gap`.
  */
 export default function Header() {
   const magneticRef = useMagnetic();
@@ -39,14 +45,17 @@ export default function Header() {
           mix-blend-mode: difference en el header, cualquier color que no
           sea blanco/negro sale distorsionado al mezclarse con el fondo.
           El "acento" queda en el subrayado animado en vez del color. */}
-      <a
-        ref={magneticRef}
-        href="#contacto"
-        className="group pointer-events-auto inline-block rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-      >
-        Hablemos
-        <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
-      </a>
+      <div className="flex items-center gap-5">
+        <ThemeToggle />
+        <a
+          ref={magneticRef}
+          href="#contacto"
+          className="group pointer-events-auto inline-block rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        >
+          Hablemos
+          <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
+        </a>
+      </div>
     </header>
   );
 }

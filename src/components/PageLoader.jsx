@@ -29,8 +29,14 @@ function wait(ms) {
  * asset más pesado del sitio, ver utils/macbookFrames.js) con un
  * primer momento de marca en vez de una pantalla en blanco — el
  * "elemento memorable" de esta pieza (DESIGN.md §1.7) es que el
- * mismo wordmark de "hilo" que ya vive en IntroSection.jsx se dibuja
- * de izquierda a derecha antes de mostrar nada más, como una firma.
+ * mismo wordmark que ya vive en IntroSection.jsx ("StudiosFein", el
+ * logo real de marca) se dibuja de izquierda a derecha antes de
+ * mostrar nada más, como una firma — coherente con lo primero que va
+ * a ver después, en vez de mostrar acá otra cosa.
+ *
+ * Claro por default / oscuro conserva el look original: mismo
+ * criterio de `dark:` que el resto del sitio, ver la nota grande de
+ * IntroSection.jsx sobre los dos temas.
  *
  * Progreso REAL, no decorativo: el barrido de `clip-path` está atado
  * directamente al `loadProgress` (frames ya decodificados / total),
@@ -116,23 +122,23 @@ export default function PageLoader({ onDone }) {
       ref={containerRef}
       role="status"
       aria-live="polite"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-fein-dark"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-6 bg-fein-light"
     >
-      <span className="sr-only">Cargando Fein, {Math.round(progress * 100)}%</span>
+      <span className="sr-only">Cargando StudiosFein, {Math.round(progress * 100)}%</span>
 
       <div className="relative" aria-hidden="true">
         {/* Trazo tenue de fondo — sin esto, la letra "aparece" pero no
             se lee como si algo la estuviera dibujando: siempre visible
             para dar la referencia completa de la forma. */}
-        <h1 className="select-none text-[16vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:1.5px_rgba(255,255,255,0.18)] md:text-[7vw]">
-          Fein
+        <h1 className="select-none text-[8vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:1.5px_rgba(23,23,23,0.18)] dark:[-webkit-text-stroke:1.5px_rgba(255,255,255,0.18)] md:text-[3.6vw]">
+          StudiosFein
         </h1>
         {/* Trazo real, recortado por el barrido de clip-path */}
         <h1
-          className="absolute inset-0 select-none text-[16vw] font-semibold leading-none tracking-tight text-white/90 [-webkit-text-fill-color:rgba(255,255,255,0.92)] [-webkit-text-stroke:2px_rgba(255,255,255,0.55)] transition-[clip-path] duration-300 ease-out md:text-[7vw]"
+          className="absolute inset-0 select-none text-[8vw] font-black leading-none tracking-tight text-neutral-900 [-webkit-text-fill-color:rgb(23,23,23)] transition-[clip-path] duration-300 ease-out dark:text-white/90 dark:[-webkit-text-fill-color:rgba(255,255,255,0.92)] dark:[-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[3.6vw]"
           style={sweepStyle}
         >
-          Fein
+          StudiosFein
         </h1>
       </div>
 

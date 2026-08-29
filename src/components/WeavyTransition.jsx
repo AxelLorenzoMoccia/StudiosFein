@@ -27,6 +27,16 @@ import { useGSAP } from '../hooks/useGSAP';
  * timing del scrub (su ScrollTrigger cubre siempre 1 viewport de
  * scroll, `start: top bottom` → `end: top top`, sin importar la
  * altura propia de la sección).
+ *
+ * Tema: la SECCIÓN (`bg-fein-light`) sí cambia con el toggle — en
+ * claro (default) apenas se nota la cortina porque todo alrededor ya
+ * es claro (esperable: ya no hay un capítulo oscuro en el medio que
+ * "revelar"); en oscuro sigue tapando el capítulo oscuro original tal
+ * cual estaba. La cortina en sí (`fill-neutral-50`/`bg-neutral-50`)
+ * queda SIN `dark:`, a propósito — nunca fue parte del "tema" del
+ * sitio, es un gris clarito fijo pensado para calzar con
+ * ServicesSection (que también queda clara en los dos temas, ver su
+ * comentario), no algo que deba invertirse.
  */
 export default function WeavyTransition() {
   const scope = useGSAP((gsap) => {
@@ -56,7 +66,7 @@ export default function WeavyTransition() {
   });
 
   return (
-    <section ref={scope} className="relative h-[40vh] w-full overflow-hidden bg-fein-dark">
+    <section ref={scope} className="relative h-[40vh] w-full overflow-hidden bg-fein-light">
       <div data-wave-curtain aria-hidden="true" className="absolute inset-0">
         {/* Cresta ondulada: el mismo path repetido x2 en ancho para loopear sin cortes */}
         <svg

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGSAP } from '../hooks/useGSAP';
 import { useMagnetic } from '../hooks/useMagnetic';
+import { useTheme } from '../hooks/useTheme';
 import PortfolioLightbox from './PortfolioLightbox';
 
 /* ============================================================
@@ -89,7 +90,7 @@ const LAYOUT = {
  * pero el pedido lo trajo pegado directo del código fuente), reescrito
  * sin TypeScript, sin "use client" (irrelevante en Vite), con íconos
  * de `lucide-react` en vez de SVGs a mano, y recoloreado con los
- * tokens de Fein (`accent`/`accent-light`, `bg-fein-dark`) en vez de
+ * tokens de Fein (`accent`/`accent-light`, `bg-fein-light`) en vez de
  * la paleta dorada genérica del original — mismo criterio que ya se
  * usó para adaptar el componente de ServicesSection.jsx.
  *
@@ -156,6 +157,10 @@ export default function PortfolioCarousel({
   const total = items.length;
   const prevMagneticRef = useMagnetic();
   const nextMagneticRef = useMagnetic();
+  // El gradiente ambiente de fondo (abajo) es demasiado dinámico para
+  // CSS puro (`dark:` no ayuda acá) — depende de saber el tema activo
+  // desde JS. Ver useTheme.js.
+  const isDark = useTheme();
 
   // `[data-portfolio-section]` vive en el div de CONTENIDO, no en el
   // <section ref={scope}> de más afuera — el selector de
@@ -222,30 +227,39 @@ export default function PortfolioCarousel({
       ref={scope}
       aria-roledescription="carrusel"
       aria-label={`Carrusel: ${sectionLabel.toLowerCase()}`}
-      className="relative w-full overflow-hidden bg-fein-dark px-6 py-24 md:px-16"
+      className="relative w-full overflow-hidden bg-fein-light px-6 py-24 md:px-16"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Ambiente de fondo — la misma foto del centro, muy oscurecida y
-          desenfocada, para dar continuidad de color detrás del stage. */}
+      {/* Ambiente de fondo — la misma foto del centro, desenfocada, para
+          dar continuidad de color detrás del stage. El nivel de
+          oscurecimiento cambia con el tema (por eso `isDark` desde JS,
+          no `dark:` — el gradiente es demasiado dinámico para CSS puro):
+          en oscuro sigue siendo el vignette casi negro original; en
+          claro es mucho más sutil, la foto se apaga hacia el tono base
+          del sitio en vez de hacia negro. */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <img
           src={items[currentIndex]?.img}
           alt=""
           className="h-full w-full scale-110 object-cover transition-[filter] duration-1000 ease-out"
-          style={{ filter: 'brightness(0.22) blur(32px)' }}
+          style={{ filter: isDark ? 'brightness(0.22) blur(32px)' : 'brightness(0.92) blur(32px) saturate(0.9)' }}
         />
         <div
           className="absolute inset-0"
-          style={{ background: 'radial-gradient(circle at center, rgba(7,7,7,0.3) 0%, rgba(7,7,7,0.92) 100%)' }}
+          style={{
+            background: isDark
+              ? 'radial-gradient(circle at center, rgba(7,7,7,0.3) 0%, rgba(7,7,7,0.92) 100%)'
+              : 'radial-gradient(circle at center, rgba(250,249,246,0.35) 0%, rgba(250,249,246,0.95) 100%)',
+          }}
         />
       </div>
 
       <div data-portfolio-section className="relative z-10 mx-auto flex max-w-6xl flex-col items-center">
         <div className="mb-16 flex flex-col items-center gap-4 text-center">
-          <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-400">
+          <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-600 dark:text-neutral-400">
             <span className="h-px w-8 bg-accent" aria-hidden="true" />
             {sectionLabel}
             <span className="h-px w-8 bg-accent" aria-hidden="true" />
@@ -311,7 +325,7 @@ export default function PortfolioCarousel({
                     handleActivate();
                   }
                 }}
-                className="absolute overflow-hidden rounded-[18px] border border-white/10 bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-light"
+                className="absolute overflow-hidden rounded-[18px] border border-neutral-900/10 bg-neutral-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-light dark:border-white/10"
                 style={{
                   width: `${layout.card.width}px`,
                   height: `${layout.card.height}px`,
@@ -417,8 +431,10 @@ export default function PortfolioCarousel({
               onClick={() => goToSlide(idx)}
               aria-label={`Ir a la pieza ${idx + 1}`}
               aria-current={idx === currentIndex}
-              className={`h-2 rounded-full border-none transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white ${
-                idx === currentIndex ? 'w-7 bg-accent-light shadow-[0_0_10px_rgba(212,184,118,0.7)]' : 'w-2 bg-white/25'
+              className={`h-2 rounded-full border-none transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent dark:focus-visible:outline-white ${
+                idx === currentIndex
+                  ? 'w-7 bg-accent-light shadow-[0_0_10px_rgba(212,184,118,0.7)]'
+                  : 'w-2 bg-neutral-900/25 dark:bg-white/25'
               }`}
             />
           ))}

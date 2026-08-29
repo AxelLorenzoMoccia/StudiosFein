@@ -208,8 +208,8 @@ export default function ImageSequenceViewer({
 
       {!isReady &&
         (loader ?? (
-          <div className="absolute inset-0 flex h-screen items-center justify-center bg-black">
-            <span className="text-sm tracking-widest text-neutral-400">
+          <div className="absolute inset-0 flex h-screen items-center justify-center bg-fein-light">
+            <span className="text-sm tracking-widest text-neutral-600 dark:text-neutral-400">
               Cargando secuencia… {Math.round(loadProgress * 100)}%
             </span>
           </div>

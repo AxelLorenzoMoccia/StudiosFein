@@ -92,7 +92,30 @@ function ServiceCard({ icon: Icon, title, text }) {
  * (ScrollTrigger.batch, un solo listener por lote en vez de un ScrollTrigger
  * por tarjeta). Fondo claro — sigue el ritmo que arranca WeavyTransition.jsx
  * justo antes de esta sección; por eso, a diferencia del componente de
- * origen (tema oscuro), esta versión quedó recoloreada para bg-neutral-50.
+ * origen (tema oscuro), esta versión quedó recoloreada para un fondo claro.
+ *
+ * Tema: esta sección queda clara EN LOS DOS TEMAS — ya lo era en el
+ * diseño original (el único respiro claro en un sitio todo oscuro).
+ * En oscuro (toggle) sigue siendo ese mismo respiro (`bg-neutral-50`,
+ * sin cambios); en claro (default nuevo) pasa a un flat `#faf9f6`
+ * (mismo tono base que `bg-fein-light`, sin la grilla/gradiente encima
+ * — nunca la tuvo, sigue plana como siempre) para que combine con el
+ * resto del sitio en vez de quedar un gris ligeramente distinto.
+ *
+ * OJO: acá NO se puede usar la clase `bg-fein-light` (aunque sería lo
+ * "consistente") combinada con `dark:bg-neutral-50` — `bg-fein-light`
+ * ya trae su PROPIA cascada `.dark .bg-fein-light {...}` en index.css
+ * (para que funcione sola, sin depender del prefijo `dark:` de
+ * Tailwind, ver la nota grande ahí). Con las dos clases juntas en el
+ * mismo elemento, esa cascada propia (misma especificidad, pero
+ * definida después en el CSS compilado) le termina ganando al
+ * `dark:bg-neutral-50` de Tailwind — la sección quedaba NEGRA en modo
+ * oscuro en vez de clara. Un color plano (`bg-[#faf9f6]`) es un
+ * utility de Tailwind común y corriente, sin ninguna cascada propia
+ * escondida, así que combina sin pisarse con `dark:bg-neutral-50`.
+ * Los colores de texto (neutral-950/600/200) no necesitan `dark:` —
+ * son "texto oscuro sobre fondo claro" en los dos casos, esta sección
+ * nunca pasa a ser oscura.
  */
 export default function ServicesSection() {
   const scope = useGSAP((gsap, ScrollTrigger) => {
@@ -113,7 +136,7 @@ export default function ServicesSection() {
   });
 
   return (
-    <section ref={scope} className="w-full bg-neutral-50 px-6 py-24 text-neutral-950 md:px-16">
+    <section ref={scope} className="w-full bg-[#faf9f6] px-6 py-24 text-neutral-950 dark:bg-neutral-50 md:px-16">
       <div className="mx-auto max-w-5xl">
         <div className="mb-16 flex flex-col items-center gap-4 text-center">
           <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-400">

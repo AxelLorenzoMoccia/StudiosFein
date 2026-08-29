@@ -31,6 +31,14 @@ const CONTACT_EMAIL = 'hola@fein.com';
  * puede pasar después de que la entrada ya terminó), separarlos en
  * dos elementos distintos hace que la superposición sea imposible
  * por construcción, no por que "en teoría no debería pasar".
+ *
+ * El botón "Contactar" invierte su color sólido entre temas (oscuro
+ * sobre claro / claro sobre oscuro), no solo ajusta tonos — el
+ * original era un botón blanco sólido, pensado como el punto más
+ * brillante contra un fondo casi negro; ese mismo blanco sobre el
+ * nuevo fondo claro (`#faf9f6`) sería casi invisible (blanco sobre
+ * casi-blanco). En claro pasa a un pill oscuro sólido, que cumple el
+ * mismo rol de "el elemento más contrastado de la vista".
  */
 export default function ContactSection() {
   const magneticRef = useMagnetic();
@@ -50,19 +58,19 @@ export default function ContactSection() {
   });
 
   return (
-    <section id="contacto" ref={scope} className="w-full bg-fein-dark px-6 py-32 text-center md:px-16">
+    <section id="contacto" ref={scope} className="w-full bg-fein-light px-6 py-32 text-center md:px-16">
       <p
         data-contact-reveal
-        className="mb-5 flex items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.3em] text-neutral-400"
+        className="mb-5 flex items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.3em] text-neutral-600 dark:text-neutral-400"
       >
         <span className="h-px w-8 bg-accent/60" aria-hidden="true" />
         ¿Tenés un proyecto en mente?
         <span className="h-px w-8 bg-accent/60" aria-hidden="true" />
       </p>
-      <h2 data-contact-reveal className="text-4xl font-semibold text-white md:text-6xl">
+      <h2 data-contact-reveal className="text-4xl font-semibold text-neutral-900 dark:text-white md:text-6xl">
         Hablemos.
       </h2>
-      <p data-contact-reveal className="mx-auto mt-6 max-w-xl text-neutral-400">
+      <p data-contact-reveal className="mx-auto mt-6 max-w-xl text-neutral-600 dark:text-neutral-400">
         Contanos qué estás armando y vemos juntos cómo darle forma.
       </p>
       {/* Dos wrappers, no uno: el de afuera es el blanco de la
@@ -75,7 +83,7 @@ export default function ContactSection() {
           <a
             href={`mailto:${CONTACT_EMAIL}`}
             aria-label={`Contactar por mail a ${CONTACT_EMAIL}`}
-            className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-semibold tracking-wide text-neutral-950 transition-all duration-300 hover:scale-105 hover:bg-accent hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-full bg-neutral-900 px-8 py-4 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:scale-105 hover:bg-accent dark:bg-white dark:text-neutral-950 dark:hover:bg-accent dark:hover:text-white"
           >
             Contactar
             <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">

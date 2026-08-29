@@ -64,7 +64,8 @@ const track = [...logos, ...logos];
 const ITEM_CLASSNAME =
   'flex shrink-0 items-center justify-center rounded px-4 outline-none ' +
   'transition-transform duration-300 ease-out ' +
-  'hover:z-10 hover:scale-125 focus-visible:z-10 focus-visible:scale-125 focus-visible:ring-2 focus-visible:ring-white/60';
+  'hover:z-10 hover:scale-125 focus-visible:z-10 focus-visible:scale-125 focus-visible:ring-2 ' +
+  'focus-visible:ring-neutral-900/60 dark:focus-visible:ring-white/60';
 
 /**
  * TRUSTED BY MARQUEE — "Quienes confiaron en nosotros"
@@ -106,7 +107,7 @@ export default function TrustedByMarquee() {
   const [isPaused, setIsPaused] = useState(false);
 
   return (
-    <section className="w-full bg-fein-dark py-24">
+    <section className="w-full bg-fein-light py-24">
       <style>{`
         @keyframes fein-marquee {
           0% { transform: translateX(0%); }
@@ -123,12 +124,14 @@ export default function TrustedByMarquee() {
       `}</style>
 
       <div className="mb-14 flex flex-col items-center gap-4 text-center">
-        <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-500">
+        <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-600 dark:text-neutral-500">
           <span className="h-px w-8 bg-accent" aria-hidden="true" />
           Confianza
           <span className="h-px w-8 bg-accent" aria-hidden="true" />
         </span>
-        <h2 className="text-3xl font-semibold text-white md:text-5xl">Quienes confiaron en nosotros</h2>
+        <h2 className="text-3xl font-semibold text-neutral-900 dark:text-white md:text-5xl">
+          Quienes confiaron en nosotros
+        </h2>
       </div>
 
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
@@ -147,7 +150,7 @@ export default function TrustedByMarquee() {
                 className="h-8 w-auto object-contain opacity-60 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0 md:h-10"
               />
             ) : (
-              <span className="select-none whitespace-nowrap text-2xl font-bold tracking-tight text-neutral-500 opacity-70 transition-all duration-300 group-hover:text-white group-hover:opacity-100 md:text-3xl">
+              <span className="select-none whitespace-nowrap text-2xl font-bold tracking-tight text-neutral-500 opacity-70 transition-all duration-300 group-hover:text-neutral-900 group-hover:opacity-100 dark:group-hover:text-white md:text-3xl">
                 {logo.name}
               </span>
             );

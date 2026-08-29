@@ -1,5 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // 'selector': el modo oscuro se activa agregando la clase `dark` al
+  // <html> a mano (ThemeToggle.jsx), no seguir ciegamente el
+  // prefers-color-scheme del sistema — el sitio ahora es claro por
+  // default (pedido explícito), con oscuro como opción, no al revés.
+  darkMode: 'selector',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

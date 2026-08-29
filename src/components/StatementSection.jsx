@@ -110,7 +110,7 @@ export default function StatementSection() {
   return (
     <section
       ref={scope}
-      className="relative w-full overflow-hidden bg-fein-dark px-6 py-28 md:px-16 md:py-36"
+      className="relative w-full overflow-hidden bg-fein-light px-6 py-28 md:px-16 md:py-36"
     >
       <div
         data-glow
@@ -119,7 +119,7 @@ export default function StatementSection() {
       />
 
       <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
-        <span className="mb-8 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.35em] text-neutral-400">
+        <span className="mb-8 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-400">
           <span className="h-px w-8 bg-accent" aria-hidden="true" />
           Manifiesto
           <span className="h-px w-8 bg-accent" aria-hidden="true" />
@@ -130,7 +130,7 @@ export default function StatementSection() {
             <div key={line.text} className="overflow-hidden py-1">
               <h2
                 data-headline-inner
-                className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl"
+                className="text-3xl font-semibold leading-tight tracking-tight text-neutral-900 dark:text-white sm:text-4xl md:text-5xl lg:text-6xl"
               >
                 {line.text}
                 {line.accent && <span className="text-accent">{line.accent}</span>}
@@ -139,16 +139,16 @@ export default function StatementSection() {
           ))}
         </div>
 
-        <p data-sub className="mt-8 max-w-xl text-balance text-lg leading-relaxed text-neutral-300 md:text-xl">
+        <p data-sub className="mt-8 max-w-xl text-balance text-lg leading-relaxed text-neutral-600 dark:text-neutral-300 md:text-xl">
           Cada marca que construimos tiene una intención clara detrás de cada trazo.
         </p>
 
         <div data-signature className="mt-10 flex items-center gap-4">
-          <span className="h-px w-10 bg-white/15" aria-hidden="true" />
-          <span className="text-xs font-medium uppercase tracking-[0.3em] text-accent-light">
+          <span className="h-px w-10 bg-neutral-900/15 dark:bg-white/15" aria-hidden="true" />
+          <span className="text-xs font-medium uppercase tracking-[0.3em] text-accent dark:text-accent-light">
             Si todavía no se nota, no está terminada
           </span>
-          <span className="h-px w-10 bg-white/15" aria-hidden="true" />
+          <span className="h-px w-10 bg-neutral-900/15 dark:bg-white/15" aria-hidden="true" />
         </div>
       </div>
 
@@ -158,12 +158,12 @@ export default function StatementSection() {
             key={pillar.n}
             data-pillar
             className={`flex flex-col gap-3 ${
-              index > 0 ? 'sm:border-l sm:border-white/10 sm:pl-8' : ''
+              index > 0 ? 'sm:border-l sm:border-neutral-900/10 sm:pl-8 dark:sm:border-white/10' : ''
             }`}
           >
             <span className="text-sm font-medium tracking-widest text-accent">{pillar.n}</span>
-            <h3 className="text-lg font-semibold text-white md:text-xl">{pillar.title}</h3>
-            <p className="leading-relaxed text-neutral-400">{pillar.text}</p>
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-white md:text-xl">{pillar.title}</h3>
+            <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">{pillar.text}</p>
           </div>
         ))}
       </div>

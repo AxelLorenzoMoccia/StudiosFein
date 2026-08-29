@@ -43,7 +43,7 @@ export default function MacbookSequenceSection() {
       <ImageSequenceViewer
         frameUrls={macbookFrames}
         scrollLength={4}
-        className="bg-fein-dark"
+        className="bg-fein-light"
         ariaLabel="Una Macbook con stickers de Fein se abre y revela una remera blanca en el aire, que va cambiando de estampas."
       />
     );

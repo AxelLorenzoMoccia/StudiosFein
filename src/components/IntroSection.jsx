@@ -1,11 +1,16 @@
 import { useRef } from 'react';
 import { useGSAP } from '../hooks/useGSAP';
 
-const LETTERS = ['F', 'e', 'i', 'n'];
+// "StudiosFein" — el wordmark real de la marca (ver el sticker central
+// del mockup de Macbook que compartió el cliente). El resto del sitio
+// sigue diciendo "Fein" a secas (decisión explícita: solo este logo
+// grande cambia, no todo el copy) — acá es el único lugar del sitio
+// con el nombre completo de marca.
+const LETTERS = ['S', 't', 'u', 'd', 'i', 'o', 's', 'F', 'e', 'i', 'n'];
 
 /**
- * 1. INTRO — "hacer foco", sin salida, wordmark de "hilo"
- * ==========================================================
+ * 1. INTRO — "hacer foco", claro por default, oscuro conserva el "hilo"
+ * =========================================================================
  * El wordmark entra desenfocado, letra por letra, y hace foco con
  * precisión — como si algo impreciso se resolviera en algo exacto.
  * Debajo se traza una línea (el acento de marca) y recién ahí aparece
@@ -15,55 +20,41 @@ const LETTERS = ['F', 'e', 'i', 'n'];
  * sección normal, sin pin ni scroll-scrub: aparece una vez al cargar
  * y, al scrollear, se va de pantalla como cualquier otro contenido.
  *
- * Accesibilidad: partir "Fein" en 4 <span> (para el stagger letra por
- * letra) rompe cómo lo lee un screen reader si no se corrige — por
- * eso el `aria-label="Fein"` vive en el <h1> base y cada letra
- * individual es `aria-hidden`. El segundo <h1> (la capa de brillo) es
- * enteramente `aria-hidden` — es una copia puramente decorativa.
+ * Accesibilidad: partir "StudiosFein" en spans (para el stagger letra
+ * por letra) rompe cómo lo lee un screen reader si no se corrige — por
+ * eso el `aria-label="StudiosFein"` vive en el <h1> base y cada letra
+ * individual es `aria-hidden`. El ® no entra en el label (no se lee en
+ * voz alta, es una convención tipográfica). El segundo <h1> (la capa
+ * de brillo) es enteramente `aria-hidden` — es una copia decorativa.
  *
- * Fondo con atmósfera de color: nada de negro plano — dos glows
- * grandes, muy desenfocados, en dos tonos del MISMO dorado de marca
- * (`accent`/`accent-light`), a la deriva con un loop lento e
- * independiente del scroll.
- *
- * EFECTO "HILO" que se ilumina cerca del mouse
- * ----------------------------------------------
- * No es un glow parejo a todo el logo al hacer hover — es un borde
- * que rodea cada letra, y SOLO el tramo de ese borde cercano al
- * cursor se ilumina de blanco más intenso, siguiendo al mouse en
- * tiempo real (el efecto tipo "neón" que se ve en librerías de
- * componentes como 21st.dev). Se arma con dos capas de texto
- * idénticas superpuestas:
- *
- *   1. Capa base: letras con relleno casi blanco (no transparente —
- *      la primera versión de esto dejaba el relleno 100% transparente
- *      para que se vieran solo como contorno/"hilo", pero
- *      `-webkit-text-stroke` sobre un relleno vacío renderiza mal en
- *      letras con contornos que se auto-intersecan, como la "e" (la
- *      panza) y la "n" (donde el asta se une al arco) — quedaban con
- *      un corte/hueco visible que no era intencional. Con relleno de
- *      verdad esas costuras quedan tapadas y la letra se ve completa)
- *      + un trazo (`-webkit-text-stroke`) tenue encima, que sigue
- *      dando el borde definido.
- *   2. Capa de brillo: mismas letras, mismo trazo pero blanco puro +
- *      `drop-shadow` (el "borde encendido"), recortada con una
- *      `mask-image` radial-gradient centrada en la posición del mouse
- *      (variables CSS `--mx`/`--my` en píxeles, actualizadas a mano
- *      en cada `pointermove` sobre el wordmark). Fuera de ese círculo,
- *      la máscara es transparente — por eso solo se ve encendido el
- *      tramo cercano al cursor, no la letra entera. Esta capa sigue
- *      con relleno transparente a propósito: donde la máscara no
- *      cubre, se ve la capa base (ya rellena) por debajo.
+ * DOS TEMAS, MISMA MECÁNICA — el sitio pasó a ser claro por default
+ * (pedido explícito del cliente), con oscuro como toggle que conserva
+ * el look original. En vez de dos componentes separados, es el MISMO
+ * efecto de "borde que se ilumina cerca del mouse" con los colores
+ * cambiados vía `dark:`:
+ *   - Claro (default): letras rellenas en negro suave, sin contorno.
+ *     El brillo al pasar el mouse es un trazo dorado (`accent`) con
+ *     glow cálido — un detalle de marca, no un efecto "neón".
+ *   - Oscuro: exactamente el mismo tratamiento de "hilo" que ya existía
+ *     (contorno blanco tenue en reposo + brillo blanco intenso
+ *     siguiendo al cursor) — el modo oscuro conserva el sitio tal cual
+ *     estaba, no es una versión nueva.
+ * Se arma con dos capas de texto idénticas superpuestas:
+ *   1. Capa base: el relleno "de reposo" (negro en claro, casi blanco
+ *      con contorno en oscuro).
+ *   2. Capa de brillo: mismo texto, recortado con una `mask-image`
+ *      radial-gradient centrada en la posición del mouse (variables
+ *      CSS `--mx`/`--my` en píxeles, actualizadas a mano en cada
+ *      `pointermove`). Fuera de ese círculo la máscara es transparente
+ *      — solo se ve encendido el tramo cercano al cursor.
  *
  * Se actualizan las variables directo sobre el DOM (`style.setProperty`)
  * en vez de por estado de React — un `pointermove` dispara decenas de
  * veces por segundo y no tiene sentido re-renderizar el componente por
- * cada uno (mismo criterio que usa el resto del sitio para todo lo que
- * GSAP anima vía selector, sin pasar por React state). No es una
- * animación de GSAP en sí (es tracking de mouse 1:1, no algo que deba
- * interpolarse con un ease), así que van con listeners nativos — pero
- * sí viven dentro del callback de `useGSAP` para reusar su cleanup
- * automático al desmontar (ver el JSDoc de ese hook).
+ * cada uno. No es una animación de GSAP en sí (es tracking de mouse
+ * 1:1), así que van con listeners nativos — pero sí viven dentro del
+ * callback de `useGSAP` para reusar su cleanup automático al
+ * desmontar (ver el JSDoc de ese hook).
  */
 export default function IntroSection() {
   const wordmarkRef = useRef(null);
@@ -73,7 +64,7 @@ export default function IntroSection() {
     gsap.set('[data-intro-letter]', { opacity: 0, filter: 'blur(20px)', y: 12 });
     gsap.set('[data-intro-line]', { scaleX: 0 });
     gsap.set('[data-intro-tagline]', { opacity: 0, y: 10 });
-    // El hilo encendido arranca invisible: no tiene sentido que se vea
+    // El brillo arranca invisible: no tiene sentido que se vea
     // "prendido" antes de que las letras terminen de enfocar.
     gsap.set(glowRef.current, { opacity: 0 });
 
@@ -113,21 +104,21 @@ export default function IntroSection() {
       // precisión" en vez de aparecer todo junto de golpe.
       .to(
         '[data-intro-letter]',
-        { opacity: 1, filter: 'blur(0px)', y: 0, duration: 0.9, ease: 'feinOut', stagger: 0.05 },
+        { opacity: 1, filter: 'blur(0px)', y: 0, duration: 0.9, ease: 'feinOut', stagger: 0.04 },
         'resolve'
       )
-      // La línea se traza mientras la última letra todavía está
+      // La línea se traza mientras las últimas letras todavía están
       // asentando — se solapan un poco para que no se sienta como una
       // lista de pasos separados, sino una sola secuencia continua.
-      .to('[data-intro-line]', { scaleX: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.5')
-      .to('[data-intro-tagline]', { opacity: 1, y: 0, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.7')
-      // El hilo queda "habilitado" (listo para reaccionar al mouse) al
-      // mismo tiempo que aparece la tagline — cierra la secuencia.
-      .to(glowRef.current, { opacity: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.7');
+      .to('[data-intro-line]', { scaleX: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.55')
+      .to('[data-intro-tagline]', { opacity: 1, y: 0, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.75')
+      // El brillo queda "habilitado" (listo para reaccionar al mouse)
+      // al mismo tiempo que aparece la tagline — cierra la secuencia.
+      .to(glowRef.current, { opacity: 1, duration: 0.6, ease: 'feinOut' }, 'resolve+=0.75');
 
-    // Tramo del hilo cercano al mouse: mueve el centro de la máscara
-    // radial de la capa de brillo a la posición del cursor, relativa
-    // al propio wordmark (no a la ventana).
+    // Tramo cercano al mouse: mueve el centro de la máscara radial de
+    // la capa de brillo a la posición del cursor, relativa al propio
+    // wordmark (no a la ventana).
     const wordmark = wordmarkRef.current;
     const glow = glowRef.current;
 
@@ -139,7 +130,7 @@ export default function IntroSection() {
 
     const handlePointerMove = (event) => setGlowPosition(event.clientX, event.clientY);
     // Al salir, el centro se manda bien lejos — la máscara radial deja
-    // de cubrir cualquier parte del hilo y el brillo desaparece.
+    // de cubrir cualquier parte del wordmark y el brillo desaparece.
     const handlePointerLeave = () => {
       glow.style.setProperty('--mx', '-9999px');
       glow.style.setProperty('--my', '-9999px');
@@ -157,36 +148,42 @@ export default function IntroSection() {
   return (
     <section
       ref={scope}
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-fein-dark"
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-fein-light"
     >
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
           data-intro-glow-a
-          className="absolute left-[8%] top-[12%] h-[60vmax] w-[60vmax] rounded-full opacity-50 blur-[120px]"
+          className="absolute left-[8%] top-[12%] h-[60vmax] w-[60vmax] rounded-full opacity-25 blur-[120px] dark:opacity-50"
           style={{ background: 'radial-gradient(circle, #d4b876 0%, transparent 70%)' }}
         />
         <div
           data-intro-glow-b
-          className="absolute bottom-[8%] right-[8%] h-[50vmax] w-[50vmax] rounded-full opacity-40 blur-[120px]"
+          className="absolute bottom-[8%] right-[8%] h-[50vmax] w-[50vmax] rounded-full opacity-20 blur-[120px] dark:opacity-40"
           style={{ background: 'radial-gradient(circle, #b08b4f 0%, transparent 70%)' }}
         />
       </div>
 
       <div className="relative flex flex-col items-center gap-6">
-        {/* Wordmark de "hilo": dos <h1> idénticos superpuestos — ver
-            nota grande arriba. `ref={wordmarkRef}` es el área que
-            escucha el mouse; su bounding box es exactamente la de las
-            letras, así que el efecto solo reacciona sobre ellas. */}
-        <div ref={wordmarkRef} className="relative">
+        {/* Wordmark: dos <h1> idénticos superpuestos — ver nota grande
+            arriba. `ref={wordmarkRef}` es el área que escucha el
+            mouse; su bounding box es exactamente la de las letras, así
+            que el efecto solo reacciona sobre ellas. */}
+        <div ref={wordmarkRef} className="relative px-4">
           <h1
-            aria-label="Fein"
-            className="flex select-none text-[28vw] font-semibold leading-none tracking-tight text-white/90 [-webkit-text-fill-color:rgba(255,255,255,0.92)] [-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[19vw]"
+            aria-label="StudiosFein"
+            className="flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-neutral-900 [-webkit-text-fill-color:rgb(23,23,23)] dark:text-white/90 dark:[-webkit-text-fill-color:rgba(255,255,255,0.92)] dark:[-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[5.5vw]"
           >
             {LETTERS.map((letter, i) => (
               <span key={i} data-intro-letter aria-hidden="true" className="inline-block">
                 {letter}
               </span>
             ))}
+            <span
+              aria-hidden="true"
+              className="ml-1 mt-1 select-none text-[2.2vw] font-semibold md:text-[1.1vw]"
+            >
+              ®
+            </span>
           </h1>
 
           {/* Capa de brillo — copia exacta, puramente decorativa,
@@ -194,7 +191,7 @@ export default function IntroSection() {
           <h1
             ref={glowRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex select-none text-[28vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2.5px_rgba(255,255,255,1)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[19vw]"
+            className="pointer-events-none absolute inset-0 flex select-none items-start text-[10vw] font-black leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(176,139,79,0.9)] [filter:drop-shadow(0_0_14px_rgba(212,184,118,0.85))] dark:[-webkit-text-stroke:2.5px_rgba(255,255,255,1)] dark:[filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[5.5vw]"
             style={{
               WebkitMaskImage:
                 'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
@@ -207,6 +204,9 @@ export default function IntroSection() {
                 {letter}
               </span>
             ))}
+            <span aria-hidden="true" className="ml-1 mt-1 select-none text-[2.2vw] font-semibold md:text-[1.1vw]">
+              ®
+            </span>
           </h1>
         </div>
 
@@ -219,7 +219,7 @@ export default function IntroSection() {
 
         <p
           data-intro-tagline
-          className="select-none text-xs font-medium uppercase tracking-[0.35em] text-neutral-400 sm:text-sm"
+          className="select-none text-xs font-medium uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-400 sm:text-sm"
         >
           Estudio de diseño e identidad de marca
         </p>

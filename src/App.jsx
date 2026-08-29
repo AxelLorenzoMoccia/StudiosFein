@@ -35,7 +35,7 @@ export default function App() {
   }
 
   return (
-    <main className="bg-fein-dark">
+    <main className="bg-fein-light">
       {/* Cursor a medida — se auto-desactiva solo en touch/reduced-motion,
           ver CustomCursor.jsx */}
       <CustomCursor />

@@ -71,7 +71,7 @@ export default function PortfolioLightbox({ item, onClose }) {
     >
       <div
         ref={panelRef}
-        className="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 md:flex-row"
+        className="relative flex w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-neutral-900/10 bg-white dark:border-white/10 dark:bg-neutral-900 md:flex-row"
       >
         <button
           ref={closeButtonRef}
@@ -86,18 +86,24 @@ export default function PortfolioLightbox({ item, onClose }) {
         <img src={item.img} alt={title} className="h-64 w-full object-cover md:h-auto md:w-1/2" />
 
         <div className="flex flex-col justify-center gap-3 p-8 md:w-1/2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-accent-light">{item.tag}</span>
-          <h3 className="text-2xl font-black uppercase leading-tight tracking-wide text-white">
+          <span className="text-xs font-semibold uppercase tracking-wide text-accent dark:text-accent-light">
+            {item.tag}
+          </span>
+          <h3 className="text-2xl font-black uppercase leading-tight tracking-wide text-neutral-900 dark:text-white">
             {item.titleLine1}
-            {item.titleLine2 && <span className="block text-lg font-bold text-neutral-300">{item.titleLine2}</span>}
+            {item.titleLine2 && (
+              <span className="block text-lg font-bold text-neutral-600 dark:text-neutral-300">
+                {item.titleLine2}
+              </span>
+            )}
           </h3>
-          <div className="h-0.5 w-8 rounded-full bg-accent-light" aria-hidden="true" />
-          {item.desc && <p className="italic leading-relaxed text-neutral-300">{item.desc}</p>}
+          <div className="h-0.5 w-8 rounded-full bg-accent dark:bg-accent-light" aria-hidden="true" />
+          {item.desc && <p className="italic leading-relaxed text-neutral-600 dark:text-neutral-300">{item.desc}</p>}
 
           <a
             href="#contacto"
             onClick={onClose}
-            className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-br from-accent-light to-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[#070707] transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            className="group mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-br from-accent-light to-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.08em] text-[#070707] transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-900 dark:focus-visible:outline-white"
           >
             Contactar
             <span className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
