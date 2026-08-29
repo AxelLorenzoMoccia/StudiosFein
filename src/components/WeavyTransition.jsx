@@ -57,12 +57,21 @@ export default function WeavyTransition() {
 
     // Movimiento infinito y sutil de la cresta, independiente del
     // scroll, para que la ola se sienta "viva" y no una imagen fija.
-    gsap.to('[data-wave-crest]', {
-      xPercent: -50,
-      duration: 10,
-      ease: 'none',
-      repeat: -1,
-    });
+    //
+    // `prefers-reduced-motion`: la cortina en sí (el `yPercent` de más
+    // arriba) queda intacta — está atada 1:1 al scroll, es la misma
+    // categoría que ScrollProgress.jsx, no autoplay. Pero este loop
+    // horizontal SÍ es autoplay puro sin relación con el scroll, así
+    // que se salta entero (mismo criterio que IntroSection.jsx).
+    // Auditoría pendiente que quedaba marcada en DESIGN.md §6.
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.to('[data-wave-crest]', {
+        xPercent: -50,
+        duration: 10,
+        ease: 'none',
+        repeat: -1,
+      });
+    }
   });
 
   return (

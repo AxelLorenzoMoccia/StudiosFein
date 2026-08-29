@@ -224,7 +224,19 @@ va a ver seguido, no animar.
 - **Máximo 1-2 elementos protagonistas animando por vista** — no todo a la vez.
 - **Respetar `prefers-reduced-motion`.** Reducir/quitar movimiento y parallax,
   pero mantener transiciones de opacity/color que ayudan a entender la
-  interfaz. Pendiente auditar en este sitio (ver §8, checklist).
+  interfaz. 🔧 Auditado: todo loop infinito puramente ambiente (no atado al
+  scroll ni al mouse, no informa nada) se salta entero bajo esta preferencia
+  en vez de solo bajarle la velocidad — los glows de IntroSection.jsx y
+  StatementSection.jsx, la cresta de WeavyTransition.jsx, el floating de
+  AIGallery.jsx, y el bob/sway de MacbookVideoScrub.jsx y
+  MacbookOpenReveal.jsx. Se dejó sin tocar lo que SÍ está atado 1:1 a una
+  acción del usuario (scroll o mouse), como ScrollProgress.jsx, el scrubbing
+  de ImageSequenceViewer/MacbookVideoScrub/MacbookOpenReveal, o el glow que
+  sigue al mouse en IntroSection — no son "movimiento autónomo", son
+  respuesta directa a lo que el usuario ya está haciendo con su propia mano.
+  Única excepción que se mantiene desacelerada en vez de apagada:
+  TrustedByMarquee.jsx (un tren de logos inmóvil se lee como roto, a
+  diferencia de un glow de fondo quieto).
 - **Nunca bloquear el input durante una animación** — el usuario tiene que
   poder seguir scrolleando/clickeando mientras algo anima.
 

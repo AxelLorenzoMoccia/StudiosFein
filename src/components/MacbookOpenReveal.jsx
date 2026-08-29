@@ -127,29 +127,38 @@ export default function MacbookOpenReveal({ scrollLength = 3.5, debug = false })
       .to('[data-print-a]', { opacity: 1, duration: 0.3 }, 'spin3+=1');
 
     // --- Ambient, independiente del scroll ---
-    // Balanceo aéreo de la remera (además del rotateY atado al scroll).
-    const bob = gsap.to('[data-tshirt]', {
-      y: -14,
-      duration: 2.6,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-    });
-
-    // Leve sway de los stickers de la tapa cerrada, para que no se
+    // Balanceo aéreo de la remera (además del rotateY atado al scroll)
+    // + leve sway de los stickers de la tapa cerrada, para que no se
     // sientan "pegados" mientras el usuario todavía está en esa parte.
-    const sway = gsap.to('[data-mb-sticker]', {
-      rotation: '+=4',
-      duration: 2.4,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-      stagger: 0.3,
-    });
+    //
+    // `prefers-reduced-motion`: ninguna de las dos informa nada (puro
+    // ambiente) — se saltan enteras en vez de solo bajarles la
+    // velocidad (mismo criterio que IntroSection.jsx). Auditoría
+    // pendiente que quedaba marcada en DESIGN.md §6.
+    let bob;
+    let sway;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      bob = gsap.to('[data-tshirt]', {
+        y: -14,
+        duration: 2.6,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      });
+
+      sway = gsap.to('[data-mb-sticker]', {
+        rotation: '+=4',
+        duration: 2.4,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        stagger: 0.3,
+      });
+    }
 
     return () => {
-      bob.kill();
-      sway.kill();
+      bob?.kill();
+      sway?.kill();
     };
   }, [scrollLength, debug]);
 

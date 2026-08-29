@@ -96,15 +96,22 @@ export default function MacbookVideoScrub({ videoSrc, scrollLength = 3.5, debug 
       // Balanceo aéreo de la remera, independiente del scroll — mismo
       // motivo que en MacbookOpenReveal.jsx: un repeat:-1 adentro de
       // un timeline scrubbeado no se movería solo.
-      const bob = gsap.to('[data-tshirt]', {
-        y: -14,
-        duration: 2.6,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-      });
+      //
+      // `prefers-reduced-motion`: autoplay puro, no informa nada — se
+      // salta entero (mismo criterio que IntroSection.jsx). Auditoría
+      // pendiente que quedaba marcada en DESIGN.md §6.
+      let bob;
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        bob = gsap.to('[data-tshirt]', {
+          y: -14,
+          duration: 2.6,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+        });
+      }
 
-      return () => bob.kill();
+      return () => bob?.kill();
     },
     [isReady, scrollLength, debug]
   );

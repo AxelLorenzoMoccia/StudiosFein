@@ -61,14 +61,19 @@ export default function AIGallery() {
     });
 
     // Animación infinita: leve "floating" + escala continua (yoyo).
-    gsap.to('[data-float-image]', {
-      y: -18,
-      scale: 1.05,
-      duration: 3,
-      ease: 'sine.inOut',
-      repeat: -1,
-      yoyo: true,
-    });
+    // `prefers-reduced-motion`: autoplay puro, no informa nada — se
+    // salta entero (mismo criterio que IntroSection.jsx). Auditoría
+    // pendiente que quedaba marcada en DESIGN.md §6.
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.to('[data-float-image]', {
+        y: -18,
+        scale: 1.05,
+        duration: 3,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+      });
+    }
   });
 
   return (

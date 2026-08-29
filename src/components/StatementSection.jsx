@@ -95,16 +95,25 @@ export default function StatementSection() {
     // estático. Mismo espíritu que la ola infinita de WeavyTransition
     // o el floating de AIGallery: nada en este sitio queda del todo
     // quieto.
-    const glow = gsap.to('[data-glow]', {
-      opacity: 0.6,
-      scale: 1.15,
-      duration: 5,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-    });
+    //
+    // `prefers-reduced-motion`: puro ambiente, no informa nada — se
+    // salta el pulso entero en vez de solo bajarle la velocidad (ver
+    // el razonamiento completo en el comentario equivalente de
+    // IntroSection.jsx). Auditoría pendiente que quedaba marcada en
+    // DESIGN.md §6.
+    let glow;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      glow = gsap.to('[data-glow]', {
+        opacity: 0.6,
+        scale: 1.15,
+        duration: 5,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      });
+    }
 
-    return () => glow.kill();
+    return () => glow?.kill();
   });
 
   return (

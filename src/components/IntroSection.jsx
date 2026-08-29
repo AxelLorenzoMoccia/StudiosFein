@@ -91,25 +91,38 @@ export default function IntroSection() {
     // No hace falta guardar la referencia ni matarlas manualmente: al
     // vivir dentro del gsap.context() de useGSAP, `ctx.revert()` las
     // limpia solas al desmontar.
-    gsap.to('[data-intro-glow-a]', {
-      x: '12%',
-      y: '-10%',
-      scale: 1.15,
-      duration: 9,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-    });
-    gsap.to('[data-intro-glow-b]', {
-      x: '-14%',
-      y: '10%',
-      scale: 1.2,
-      duration: 11,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-      delay: 1.2,
-    });
+    //
+    // `prefers-reduced-motion`: estos dos glows son puro ambiente (no
+    // comunican nada, a diferencia del reveal de las letras) y se
+    // mueven en loop infinito sobre gran parte de la pantalla — el
+    // caso de manual de "parallax" que DESIGN.md §4.5 pide reducir o
+    // sacar, no solo bajarle la velocidad (a diferencia del marquee de
+    // TrustedByMarquee.jsx, un glow quieto no "se lee como roto": es
+    // indistinguible de un fondo estático a propósito). Auditoría
+    // pendiente que quedaba marcada en DESIGN.md §6.
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+      gsap.to('[data-intro-glow-a]', {
+        x: '12%',
+        y: '-10%',
+        scale: 1.15,
+        duration: 9,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      });
+      gsap.to('[data-intro-glow-b]', {
+        x: '-14%',
+        y: '10%',
+        scale: 1.2,
+        duration: 11,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: 1.2,
+      });
+    }
 
     // Entrada: autoplay al montar, NO atada al scroll. Un leve delay
     // para que no "explote" apenas termina de pintar la página — deja
