@@ -42,9 +42,18 @@ export default function MacbookSequenceSection() {
     return (
       <ImageSequenceViewer
         frameUrls={macbookFrames}
-        scrollLength={4}
+        // 866 frames ahora (antes 300, un solo clip) — son 3 clips de
+        // 10s concatenados (apertura + estampas + cierre, ver el
+        // comentario de cabecera de utils/macbookFrames.js, incluye
+        // por qué el tramo de estampas quedó en 266 y no 300). Subido
+        // a 12 (de 4) para mantener aproximadamente la MISMA relación
+        // frames-por-scroll que ya existía (300f/4vh = 75f/vh →
+        // 866f/12vh ≈ 72f/vh) en vez de que la secuencia se sienta
+        // mucho más rápida/brusca por tener casi el triple de frames
+        // en el mismo tramo de scroll.
+        scrollLength={12}
         className="bg-fein-light"
-        ariaLabel="Una Macbook con stickers de Fein se abre y revela una remera blanca en el aire, que va cambiando de estampas."
+        ariaLabel="Una laptop con el sticker de StudiosFein se abre, muestra una remera blanca que va cambiando de estampas propias, y se cierra sobre ese mismo sticker."
       />
     );
   }
