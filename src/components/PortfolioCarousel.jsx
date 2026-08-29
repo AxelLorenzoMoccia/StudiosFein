@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useGSAP } from '../hooks/useGSAP';
 
 /* ============================================================
@@ -339,18 +339,10 @@ export default function PortfolioCarousel({
                     <div className="my-1.5 h-0.5 w-8 rounded-full bg-accent-light shadow-[0_0_8px_rgba(212,184,118,0.7)]" />
 
                     {item.desc && (
-                      <p className="m-0 mb-2.5 max-w-[280px] text-[0.82rem] italic leading-tight text-white/90 [text-shadow:0_2px_8px_rgba(0,0,0,0.9)]">
+                      <p className="m-0 max-w-[280px] text-[0.82rem] italic leading-tight text-white/90 [text-shadow:0_2px_8px_rgba(0,0,0,0.9)]">
                         {item.desc}
                       </p>
                     )}
-
-                    <a
-                      href="#contacto"
-                      className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-accent-light to-accent px-4 py-1.5 text-[0.72rem] font-extrabold uppercase tracking-[0.14em] text-[#070707] shadow-[0_4px_14px_rgba(0,0,0,0.4),0_0_15px_rgba(176,139,79,0.3)] transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-                    >
-                      Hablemos
-                      <ArrowRight className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
-                    </a>
                   </div>
                 </div>
               </div>
