@@ -28,23 +28,32 @@ const LETTERS = ['F', 'e', 'i', 'n'];
  *
  * EFECTO "HILO" que se ilumina cerca del mouse
  * ----------------------------------------------
- * No es un glow parejo a todo el logo al hacer hover — es un hilo/
- * contorno fino que rodea cada letra, y SOLO el tramo de ese hilo
- * cercano al cursor se ilumina de blanco más intenso, siguiendo al
- * mouse en tiempo real (el efecto tipo "neón" que se ve en librerías
- * de componentes como 21st.dev). Se arma con dos capas de texto
+ * No es un glow parejo a todo el logo al hacer hover — es un borde
+ * que rodea cada letra, y SOLO el tramo de ese borde cercano al
+ * cursor se ilumina de blanco más intenso, siguiendo al mouse en
+ * tiempo real (el efecto tipo "neón" que se ve en librerías de
+ * componentes como 21st.dev). Se arma con dos capas de texto
  * idénticas superpuestas:
  *
- *   1. Capa base: letras con relleno transparente y solo un trazo
- *      (`-webkit-text-stroke`) tenue — el "hilo" siempre visible, en
- *      reposo.
+ *   1. Capa base: letras con relleno casi blanco (no transparente —
+ *      la primera versión de esto dejaba el relleno 100% transparente
+ *      para que se vieran solo como contorno/"hilo", pero
+ *      `-webkit-text-stroke` sobre un relleno vacío renderiza mal en
+ *      letras con contornos que se auto-intersecan, como la "e" (la
+ *      panza) y la "n" (donde el asta se une al arco) — quedaban con
+ *      un corte/hueco visible que no era intencional. Con relleno de
+ *      verdad esas costuras quedan tapadas y la letra se ve completa)
+ *      + un trazo (`-webkit-text-stroke`) tenue encima, que sigue
+ *      dando el borde definido.
  *   2. Capa de brillo: mismas letras, mismo trazo pero blanco puro +
- *      `drop-shadow` (el "hilo encendido"), recortada con una
+ *      `drop-shadow` (el "borde encendido"), recortada con una
  *      `mask-image` radial-gradient centrada en la posición del mouse
  *      (variables CSS `--mx`/`--my` en píxeles, actualizadas a mano
  *      en cada `pointermove` sobre el wordmark). Fuera de ese círculo,
  *      la máscara es transparente — por eso solo se ve encendido el
- *      tramo cercano al cursor, no la letra entera.
+ *      tramo cercano al cursor, no la letra entera. Esta capa sigue
+ *      con relleno transparente a propósito: donde la máscara no
+ *      cubre, se ve la capa base (ya rellena) por debajo.
  *
  * Se actualizan las variables directo sobre el DOM (`style.setProperty`)
  * en vez de por estado de React — un `pointermove` dispara decenas de
@@ -171,7 +180,7 @@ export default function IntroSection() {
         <div ref={wordmarkRef} className="relative">
           <h1
             aria-label="Fein"
-            className="flex select-none text-[26vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[18vw]"
+            className="flex select-none text-[28vw] font-semibold leading-none tracking-tight text-white/90 [-webkit-text-fill-color:rgba(255,255,255,0.92)] [-webkit-text-stroke:2px_rgba(255,255,255,0.55)] md:text-[19vw]"
           >
             {LETTERS.map((letter, i) => (
               <span key={i} data-intro-letter aria-hidden="true" className="inline-block">
@@ -185,7 +194,7 @@ export default function IntroSection() {
           <h1
             ref={glowRef}
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 flex select-none text-[26vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2.5px_rgba(255,255,255,1)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[18vw]"
+            className="pointer-events-none absolute inset-0 flex select-none text-[28vw] font-semibold leading-none tracking-tight text-transparent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:2.5px_rgba(255,255,255,1)] [filter:drop-shadow(0_0_12px_rgba(255,255,255,0.9))] md:text-[19vw]"
             style={{
               WebkitMaskImage:
                 'radial-gradient(circle 140px at var(--mx, -9999px) var(--my, -9999px), black 0%, black 40%, transparent 75%)',
