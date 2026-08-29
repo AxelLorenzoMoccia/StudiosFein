@@ -26,34 +26,40 @@ const galleryImages = Object.keys(galleryModules)
   .map((key) => galleryModules[key]);
 
 // Copy por foto, en el mismo orden que los archivos ordenados arriba
-// (01-textura, 02-remera, 04-boceto, 05-bordado). Texto honesto sobre
-// lo que se ve en cada imagen — nada de nombres de clientes o
-// proyectos inventados (DESIGN.md §7/§8: se respeta el criterio de no
-// fabricar contenido que no fue provisto).
+// (01-denim-ancho, 02-sweater-grafiti, 03-sweater-canale,
+// 04-campera-lana). Texto honesto sobre lo que se ve en cada
+// imagen — nada de nombres de clientes o proyectos inventados
+// (DESIGN.md §7/§8: se respeta el criterio de no fabricar contenido
+// que no fue provisto). Dos de estas cuatro fotos (el sweater con
+// etiqueta/puño bordado y la campera con bordado en el respaldo) son
+// de referencia de moodboard, no piezas fabricadas por Fein — el copy
+// evita nombrar o citar la marca/tipografía real que llevan bordada,
+// para no terminar promocionando en el propio sitio un producto de
+// otra marca.
 const CAPTIONS = [
   {
-    tag: '#Materiales',
-    titleLine1: 'TEXTURA',
-    titleLine2: 'NATURAL',
-    desc: 'Lino crudo — el punto de partida antes de cualquier estampa.',
+    tag: '#Producto',
+    titleLine1: 'DENIM',
+    titleLine2: 'ANCHO',
+    desc: 'Corte oversize, lavado desgastado — el volumen como identidad.',
+  },
+  {
+    tag: '#Detalle',
+    titleLine1: 'PUNTO',
+    titleLine2: 'GRÁFICO',
+    desc: 'Una tipografía difuminada, tejida directo en el punto.',
   },
   {
     tag: '#Producto',
-    titleLine1: 'PRENDA',
-    titleLine2: 'EN BLANCO',
-    desc: 'El lienzo antes de la identidad. Todo proyecto arranca así.',
-  },
-  {
-    tag: '#Proceso',
-    titleLine1: 'BOCETO',
-    titleLine2: 'A MANO',
-    desc: 'Antes de la pantalla, siempre hay un lápiz.',
+    titleLine1: 'CANALÉ',
+    titleLine2: 'CLÁSICO',
+    desc: 'Tejido grueso, cuello y puño reforzados — un básico bien resuelto.',
   },
   {
     tag: '#Detalle',
     titleLine1: 'BORDADO',
-    titleLine2: 'ARTESANAL',
-    desc: 'El detalle que se nota de cerca, aunque nadie lo señale.',
+    titleLine2: 'EN RESPALDO',
+    desc: 'El texto como pieza gráfica, no solo como etiqueta.',
   },
 ];
 
