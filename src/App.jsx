@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Header from './components/Header';
+import PageLoader from './components/PageLoader';
 import IntroSection from './components/IntroSection';
 import StatementSection from './components/StatementSection';
 import MacbookSequenceSection from './components/MacbookSequenceSection';
@@ -18,6 +20,19 @@ import Footer from './components/Footer';
 // corresponda, no hace falta rehacer nada.
 
 export default function App() {
+  // El resto del sitio no se monta hasta que PageLoader termina — así
+  // el timeline de entrada de IntroSection (que arranca solo, al
+  // montarse) juega recién cuando el usuario puede verlo, no escondido
+  // atrás de la pantalla de carga (si montara todo de una, esa
+  // animación ya habría terminado por completo para cuando el loader
+  // se corre, y el usuario se perdería el "foco" de las letras). Ver
+  // el comentario largo en PageLoader.jsx para el resto del criterio.
+  const [isLoading, setIsLoading] = useState(true);
+
+  if (isLoading) {
+    return <PageLoader onDone={() => setIsLoading(false)} />;
+  }
+
   return (
     <main className="bg-fein-dark">
       {/* Nav fija — se auto-invierte según la sección (ver Header.jsx) */}

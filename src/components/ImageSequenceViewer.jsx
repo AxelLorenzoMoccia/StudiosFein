@@ -1,31 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGSAP } from '../hooks/useGSAP';
-
-/**
- * Carga una imagen y resuelve cuando ya está *decodificada* (no solo
- * descargada). `img.decode()` evita el "hitch" de decodificación que
- * ocurre en el primer draw de una imagen recién cargada — clave para
- * que scrollear rápido no trabe el dibujo frame a frame.
- *
- * Si `decode()` no existe (navegador viejo) o falla (ej. frame roto),
- * igual resolvemos con onload/onerror para no bloquear toda la secuencia
- * por un único frame.
- */
-function loadImage(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = src;
-
-    const settle = () => resolve(img);
-
-    if ('decode' in img) {
-      img.decode().then(settle).catch(settle);
-    } else {
-      img.onload = settle;
-      img.onerror = settle;
-    }
-  });
-}
+import { loadImage } from '../utils/loadImage';
 
 /**
  * ImageSequenceViewer
