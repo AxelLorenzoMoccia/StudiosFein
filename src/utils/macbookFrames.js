@@ -48,4 +48,26 @@ export const macbookFrames = Object.keys(frameModules)
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   .map((key) => frameModules[key]);
 
+// Subsampleo para mobile — 1 de cada 3 frames (≈289 de 866).
+//
+// Los 866 frames de arriba son fotos reales (no ilustraciones), y
+// pesan ~15MB en total — mucho más que el set anterior de 300 frames
+// dibujados (~3.5MB). En una conexión de celular esa descarga es lo
+// que hace que la sección tarde "bastante" en aparecer: el tope duro
+// de PageLoader.jsx (2.5s) no alcanza a cubrirla, así que el usuario
+// termina esperando en el fallback propio de ImageSequenceViewer.
+//
+// Se define acá (no en cada componente que lo usa) porque tanto
+// MacbookSequenceSection.jsx como PageLoader.jsx necesitan el MISMO
+// subset — si cada uno recortara por su cuenta, PageLoader podría
+// precargar frames que ImageSequenceViewer nunca pide (o viceversa),
+// desperdiciando el ancho de banda que este subsampleo busca ahorrar.
+// El desktop sigue usando `macbookFrames` completo (la versión más
+// fluida) sin tocar nada acá.
+const MOBILE_FRAME_STEP = 3;
+
+export const macbookFramesMobile = macbookFrames.filter(
+  (_, index) => index % MOBILE_FRAME_STEP === 0
+);
+
 export default macbookFrames;

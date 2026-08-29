@@ -92,7 +92,21 @@ export default function ImageSequenceViewer({
     };
   }, [frameUrls, onFramesLoaded]);
 
-  // --- 2. Dibuja un frame en el canvas, con ajuste tipo "cover" ---
+  // --- 2. Dibuja un frame en el canvas, con ajuste tipo "contain" ---
+  // Antes era "cover" (llenar todo el canvas, recortando lo que
+  // sobre) — andaba bien en desktop porque un monitor típico no está
+  // tan lejos del aspect ratio 16:9 de los frames, pero en un celular
+  // en vertical (canvasRatio ~0.46) contra frames 16:9 (~1.78) el
+  // "cover" tiene que agrandar la imagen hasta que la ALTURA llene la
+  // pantalla, y esa altura termina siendo mucho más grande que el
+  // ancho real del frame — el resultado es recortar casi todo el
+  // ancho y mostrar solo una tira angosta del centro, ampliada muy
+  // por encima de su resolución nativa (de ahí el zoom exagerado y el
+  // pixelado que se reportó en mobile). "Contain" muestra el frame
+  // COMPLETO siempre (nunca recorta), ajustando por el lado que haga
+  // falta — en vertical deja franjas vacías arriba/abajo en vez de
+  // cortar los costados, pero nunca amplía más allá de lo necesario
+  // para que el ancho o el alto entren.
   const drawFrame = useCallback((index) => {
     const canvas = canvasRef.current;
     const img = imagesRef.current[index];
@@ -111,15 +125,19 @@ export default function ImageSequenceViewer({
     let offsetY;
 
     if (imgRatio > canvasRatio) {
-      drawHeight = height;
-      drawWidth = drawHeight * imgRatio;
-      offsetX = (width - drawWidth) / 2;
-      offsetY = 0;
-    } else {
+      // El frame es relativamente más ancho que el canvas → se ajusta
+      // por ANCHO (el que se queda con margen es el alto).
       drawWidth = width;
       drawHeight = drawWidth / imgRatio;
       offsetX = 0;
       offsetY = (height - drawHeight) / 2;
+    } else {
+      // El frame es relativamente más alto que el canvas → se ajusta
+      // por ALTO (el que se queda con margen es el ancho).
+      drawHeight = height;
+      drawWidth = drawHeight * imgRatio;
+      offsetX = (width - drawWidth) / 2;
+      offsetY = 0;
     }
 
     ctx.clearRect(0, 0, width, height);

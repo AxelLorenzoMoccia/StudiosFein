@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { macbookFrames } from '../utils/macbookFrames';
+import { macbookFrames, macbookFramesMobile } from '../utils/macbookFrames';
 import { loadImage } from '../utils/loadImage';
 
 // Tope duro de espera — si la conexión es lenta, el sitio no se puede
@@ -79,14 +79,21 @@ export default function PageLoader({ onDone }) {
 
   useEffect(() => {
     let cancelled = false;
-    const total = macbookFrames.length;
+    // Mismo breakpoint que MacbookSequenceSection.jsx: precargar acá
+    // justo el subset que esa sección va a pedir en mobile (ver
+    // utils/macbookFrames.js) — precargar los 866 frames completos
+    // igual en mobile sería desperdiciar ancho de banda en frames que
+    // ImageSequenceViewer ni siquiera va a usar ahí.
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const framesToPreload = isMobile ? macbookFramesMobile : macbookFrames;
+    const total = framesToPreload.length;
     let loaded = 0;
 
     const preload =
       total === 0
         ? Promise.resolve()
         : Promise.all(
-            macbookFrames.map((src) =>
+            framesToPreload.map((src) =>
               loadImage(src).then(() => {
                 loaded += 1;
                 if (!cancelled) setProgress(loaded / total);
