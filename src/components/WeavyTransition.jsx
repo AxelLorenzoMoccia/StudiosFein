@@ -16,6 +16,17 @@ import { useGSAP } from '../hooks/useGSAP';
  * Si más adelante el equipo de diseño provee un SVG de ola/forma
  * propia, basta con reemplazar el <path> de abajo por el suyo
  * (ajustando el viewBox si hace falta).
+ *
+ * Altura: la cresta ondulada mide siempre 80px (`h-20`, fija, no
+ * depende de la altura de la sección) — con `h-[70vh]` quedaba un
+ * tramo enorme de "cuerpo sólido" de la cortina sin nada dibujado
+ * encima antes de que arrancara ServicesSection, un espacio en blanco
+ * muerto notorio entre el video de la Macbook y "Qué hacemos". Bajado
+ * a `h-[40vh]`: sigue habiendo aire para que la transición se lea,
+ * pero sin el sobrante. No usa `pin`, así que achicarla no rompe el
+ * timing del scrub (su ScrollTrigger cubre siempre 1 viewport de
+ * scroll, `start: top bottom` → `end: top top`, sin importar la
+ * altura propia de la sección).
  */
 export default function WeavyTransition() {
   const scope = useGSAP((gsap) => {
@@ -45,7 +56,7 @@ export default function WeavyTransition() {
   });
 
   return (
-    <section ref={scope} className="relative h-[70vh] w-full overflow-hidden bg-fein-dark">
+    <section ref={scope} className="relative h-[40vh] w-full overflow-hidden bg-fein-dark">
       <div data-wave-curtain aria-hidden="true" className="absolute inset-0">
         {/* Cresta ondulada: el mismo path repetido x2 en ancho para loopear sin cortes */}
         <svg
