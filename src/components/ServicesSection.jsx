@@ -1,121 +1,60 @@
-import { useId, useMemo } from 'react';
-import { Film, MonitorSmartphone, PenTool, ShoppingBag } from 'lucide-react';
+import { Shirt, Fingerprint, Package, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { useGSAP } from '../hooks/useGSAP';
 
+/**
+ * Copy real, sacado del catálogo de servicios del cliente
+ * (studiosfein.pdf, sección "Servicios Disponibles") — no inventado,
+ * solo prolijado (el PDF tenía algún typo suelto, ej. "tdos") y
+ * recortado donde el original repetía cosas para el formato slide.
+ * Pedido explícito: "agarra este pdf e incluile lo que tiene (...)
+ * pero con el fondo blanco liso" — mismo contenido, mismo orden que
+ * el catálogo, sobre `bg-paper` en vez del fondo gris con textura que
+ * tenía el PDF.
+ */
 const SERVICES = [
   {
-    icon: PenTool,
-    title: 'Identidad de marca',
-    text: 'Logotipos, sistemas visuales y guías de marca pensadas para sostenerse en el tiempo, no solo para el lanzamiento.',
+    icon: Shirt,
+    title: 'Estampas',
+    text: 'Diseñamos piezas gráficas en máxima calidad, únicas para aplicar sobre prendas, combinando composición, tipografía, recursos visuales y una dirección estética coherente con la identidad de cada marca. Entregamos todos los diseños con mockups profesionales de alta calidad, en baja, media o alta complejidad.',
   },
   {
-    icon: MonitorSmartphone,
-    title: 'Diseño digital',
-    text: 'Sitios y productos digitales con una premisa simple: que se sientan tan bien como se ven.',
+    icon: Fingerprint,
+    title: 'Branding & Manual de marca',
+    text: 'Desarrollamos una identidad visual sólida y coherente, definiendo cómo se presenta la marca en cada punto de contacto: sistema de logos, paleta de colores, tipografías, aplicaciones digitales, tarjetas, papelería, piezas de comunicación y guía de uso de marca.',
   },
   {
-    icon: Film,
-    title: 'Motion y producción',
-    text: 'Animación, video y contenido en movimiento para que la marca no se quede quieta en ningún lado.',
+    icon: Package,
+    title: 'Producto terminado',
+    text: 'Nos encargamos de todo el proceso: conseguimos la prenda, desarrollamos los diseños y realizamos el estampado, cuidando cada detalle hasta obtener un producto final listo para comercializar. Vos solo te encargás de vender. Nosotros, del resto.',
   },
   {
-    icon: ShoppingBag,
-    title: 'Producto y merchandising',
-    text: 'Objetos, prendas y piezas físicas que llevan la identidad de marca más allá de la pantalla.',
+    icon: Sparkles,
+    title: 'Producción de fotos con IA',
+    text: 'Creamos fotografías profesionales de producto con modelos generados por IA, cuidando iluminación, composición, escenarios y estética para desarrollar contenido visual de alto impacto, listo para redes, campañas y catálogos.',
+  },
+  {
+    icon: ImageIcon,
+    title: 'Mockups profesionales',
+    text: 'Presentamos tus diseños en mockups de alta calidad, listos para utilizar en redes sociales, catálogos y material comercial, con una presentación cuidada y profesional.',
   },
 ];
 
-/**
- * Textura de fondo de cada tarjeta: un puñado de cuadrados de una grilla
- * punteada, resaltados al azar — el mismo recurso que ya usa `.bg-fein-dark`
- * (atmósfera en capas en vez de color plano, ver DESIGN.md §2), aplicado acá
- * en versión clara para que funcione sobre `bg-neutral-50`.
- */
-function randomHighlightedSquares(count = 5) {
-  return Array.from({ length: count }, () => [
-    Math.floor(Math.random() * 4) + 7,
-    Math.floor(Math.random() * 6) + 1,
-  ]);
-}
-
-function GridPattern({ width, height, squares, className }) {
-  const patternId = useId();
-
-  return (
-    <svg aria-hidden="true" className={className}>
-      <defs>
-        <pattern id={patternId} width={width} height={height} patternUnits="userSpaceOnUse" x="-1" y="-1">
-          <path d={`M.5 ${height}V.5H${width}`} fill="none" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" strokeWidth={0} fill={`url(#${patternId})`} />
-      <svg x="-1" y="-1" className="overflow-visible">
-        {squares.map(([sx, sy], index) => (
-          <rect key={index} strokeWidth="0" width={width + 1} height={height + 1} x={sx * width} y={sy * height} />
-        ))}
-      </svg>
-    </svg>
-  );
-}
-
-/**
- * Tarjeta de servicio individual — layout base (grilla con divisores, ícono,
- * textura de fondo) adaptado de "Grid Feature Cards" de 21st.dev
- * (github.com/sshahaider, vía MCP de 21st.dev), reescrito sin TypeScript, sin
- * framer-motion (acá el motion es GSAP, ver useGSAP.js) y sin el helper `cn`
- * de shadcn (no está configurado en este proyecto) — y recoloreado para nuestra
- * paleta clara en vez del tema oscuro genérico del original.
- */
 function ServiceCard({ icon: Icon, title, text }) {
-  const squares = useMemo(() => randomHighlightedSquares(), []);
-
   return (
-    <div data-service-card className="group relative overflow-hidden p-8">
-      <GridPattern
-        width={20}
-        height={20}
-        squares={squares}
-        className="pointer-events-none absolute inset-0 h-full w-full fill-neutral-950/[0.025] stroke-neutral-950/10 [mask-image:radial-gradient(farthest-side_at_top_left,white,transparent)]"
-      />
-      <Icon className="relative h-6 w-6 text-accent" strokeWidth={1.25} aria-hidden="true" />
-      <h3 className="relative mt-8 text-xl font-semibold md:text-2xl">{title}</h3>
-      <p className="relative mt-3 leading-relaxed text-neutral-600">{text}</p>
-      <span className="relative mt-6 block h-px w-8 bg-neutral-200 transition-all duration-300 group-hover:w-16 group-hover:bg-accent" />
+    <div data-service-card className="flex flex-col gap-4 p-8">
+      <Icon className="h-6 w-6 text-ink" strokeWidth={1.25} aria-hidden="true" />
+      <h3 className="text-xl font-medium text-ink">{title}</h3>
+      <p className="font-light leading-relaxed text-ink">{text}</p>
     </div>
   );
 }
 
 /**
  * SERVICIOS — "qué hacemos"
- * --------------------------
- * Grilla de tarjetas con fade-up + stagger al entrar en viewport
- * (ScrollTrigger.batch, un solo listener por lote en vez de un ScrollTrigger
- * por tarjeta). Fondo claro — sigue el ritmo que arranca WeavyTransition.jsx
- * justo antes de esta sección; por eso, a diferencia del componente de
- * origen (tema oscuro), esta versión quedó recoloreada para un fondo claro.
- *
- * Tema: esta sección queda clara EN LOS DOS TEMAS — ya lo era en el
- * diseño original (el único respiro claro en un sitio todo oscuro).
- * En oscuro (toggle) sigue siendo ese mismo respiro (`bg-neutral-50`,
- * sin cambios); en claro (default nuevo) pasa a un flat `#faf9f6`
- * (mismo tono base que `bg-fein-light`, sin la grilla/gradiente encima
- * — nunca la tuvo, sigue plana como siempre) para que combine con el
- * resto del sitio en vez de quedar un gris ligeramente distinto.
- *
- * OJO: acá NO se puede usar la clase `bg-fein-light` (aunque sería lo
- * "consistente") combinada con `dark:bg-neutral-50` — `bg-fein-light`
- * ya trae su PROPIA cascada `.dark .bg-fein-light {...}` en index.css
- * (para que funcione sola, sin depender del prefijo `dark:` de
- * Tailwind, ver la nota grande ahí). Con las dos clases juntas en el
- * mismo elemento, esa cascada propia (misma especificidad, pero
- * definida después en el CSS compilado) le termina ganando al
- * `dark:bg-neutral-50` de Tailwind — la sección quedaba NEGRA en modo
- * oscuro en vez de clara. Un color plano (`bg-[#faf9f6]`) es un
- * utility de Tailwind común y corriente, sin ninguna cascada propia
- * escondida, así que combina sin pisarse con `dark:bg-neutral-50`.
- * Los colores de texto (neutral-950/600/200) no necesitan `dark:` —
- * son "texto oscuro sobre fondo claro" en los dos casos, esta sección
- * nunca pasa a ser oscura.
+ * ---------------------------
+ * Fondo blanco liso (`bg-paper`), sin la textura/grano que tenía el
+ * PDF original — pedido explícito. Fade-up + stagger simple al entrar
+ * en viewport, mismo lenguaje del resto del sitio.
  */
 export default function ServicesSection() {
   const scope = useGSAP((gsap, ScrollTrigger) => {
@@ -129,25 +68,25 @@ export default function ServicesSection() {
           y: 0,
           duration: 0.8,
           ease: 'power2.out',
-          stagger: 0.12,
+          stagger: 0.1,
           overwrite: true,
         }),
     });
   });
 
   return (
-    <section ref={scope} className="w-full bg-[#faf9f6] px-6 py-24 text-neutral-950 dark:bg-neutral-50 md:px-16">
-      <div className="mx-auto max-w-5xl">
+    <section ref={scope} className="w-full bg-paper px-6 py-24 md:px-16">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-16 flex flex-col items-center gap-4 text-center">
-          <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-400">
-            <span className="h-px w-8 bg-accent" aria-hidden="true" />
+          <span className="flex items-center gap-3 text-xs font-light uppercase tracking-[0.3em] text-ink">
+            <span className="h-px w-8 bg-stone" aria-hidden="true" />
             Servicios
-            <span className="h-px w-8 bg-accent" aria-hidden="true" />
+            <span className="h-px w-8 bg-stone" aria-hidden="true" />
           </span>
-          <h2 className="text-3xl font-semibold md:text-5xl">Qué hacemos</h2>
+          <h2 className="text-3xl font-medium text-ink md:text-5xl">Qué hacemos</h2>
         </div>
 
-        <div className="grid grid-cols-1 divide-y divide-neutral-200 border border-neutral-200 sm:grid-cols-2 sm:divide-x lg:grid-cols-4">
+        <div className="grid grid-cols-1 divide-y divide-stone border border-stone sm:grid-cols-2 sm:divide-x lg:grid-cols-5">
           {SERVICES.map((service) => (
             <ServiceCard key={service.title} {...service} />
           ))}

@@ -10,83 +10,62 @@
 */
 
 /*
-  TEMA: claro por default, oscuro opcional (ThemeToggle.jsx agrega/
-  saca la clase `dark` del <html>, ver tailwind.config.js
-  `darkMode: 'selector'`). Los dos fondos siguen la misma filosofía
-  ("atmósfera en capas, nunca un color sólido a secas", DESIGN.md §2):
-  un tono casi-neutro de base + dos gradientes radiales sutiles del
-  MISMO dorado de marca + un grano fino (ruido SVG vía feTurbulence)
-  encima — la textura que usan los sitios tipo Apple para que un
-  fondo grande tenga profundidad sin leerse como "textura" a simple
-  vista.
-
-  `.bg-fein-light`/`.bg-fein-dark` NO son utilities de Tailwind (son
-  CSS a mano, como ya eran antes) — así que escribir `dark:bg-fein-dark`
-  en un className NO funciona: Tailwind solo sabe generar el prefijo
-  `dark:` para utilities que él mismo reconoce, y esto no es una. El
-  cambio de tema para estas dos clases se resuelve ACÁ, con la cascada
-  `.dark .bg-fein-light { ... }` de abajo — los componentes escriben
-  simplemente `className="bg-fein-light"` (sin `dark:` al lado) y el
-  tema correcto sale solo según haya o no `.dark` en el `<html>`.
-  `.bg-fein-dark` a secas (sin `.dark` ancestro) queda disponible por
-  si alguna sección alguna vez necesita quedar oscura siempre, pero
-  hoy nada la usa así — todo pasa por `bg-fein-light`.
+  TIPOGRAFÍA — Helvetica Neue, la que pidió el cliente (archivos
+  propios, no Google Fonts). Solo 4 de los 8 pesos del paquete
+  original (Light/Regular/Medium/Bold) — el sitio no usa itálica ni
+  los extremos (UltraLight/Thin/Heavy/Black), cargar los 16 archivos
+  originales hubiera sumado ~6.5MB sin necesidad. Convertidos a WOFF2
+  (de OTF) con fonttools: el mismo peso visual a una fracción del
+  tamaño (~600KB los 4 juntos en vez de ~1.8MB en OTF).
 */
-body,
-.bg-fein-light {
-  background-color: #faf9f6;
-  background-image:
-    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(176, 139, 79, 0.07), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 85% 110%, rgba(176, 139, 79, 0.05), transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, no-repeat, repeat;
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('./assets/fonts/helvetica-neue/HelveticaNeue-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
-
-.dark body,
-.dark .bg-fein-light,
-.bg-fein-dark {
-  background-color: #070707;
-  background-image:
-    radial-gradient(ellipse 70% 50% at 15% -10%, rgba(255, 255, 255, 0.025), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 85% 110%, rgba(255, 255, 255, 0.018), transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: no-repeat, no-repeat, repeat;
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('./assets/fonts/helvetica-neue/HelveticaNeue-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
-
-body {
-  @apply font-sans text-neutral-900 antialiased transition-colors duration-300;
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('./assets/fonts/helvetica-neue/HelveticaNeue-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
-
-.dark body {
-  @apply text-white;
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('./assets/fonts/helvetica-neue/HelveticaNeue-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 /*
-  Nunca scroll horizontal (regla ALTA de accesibilidad/UX, DESIGN.md
-  §6). El sitio tiene un par de elementos ANCHOS A PROPÓSITO para
-  loops infinitos (la cresta de la ola en WeavyTransition, el tren de
-  TrustedByMarquee) — cada uno ya vive dentro de su propio
-  `overflow-hidden`, pero terminaban empujando el ancho scrolleable
-  del DOCUMENTO igual (encontrado con
-  `document.documentElement.scrollWidth` > `clientWidth` en el
-  navegador real). Este es el cinturón de seguridad a nivel body: no
-  afecta el scroll VERTICAL (del que depende todo el sitio), solo
-  corta cualquier desborde horizontal, venga de donde venga.
+  FONDO Y TEXTO — paleta exacta de 6 tonos que pidió el dueño de la
+  marca (ver tailwind.config.js `colors`) — `paper` (#FDFDFD) de base,
+  `ink` (#2A2A2A) para el texto. Nada de gradientes ni grano encima —
+  "la web tiene que pasar desapercibida con el fondo blanco".
+*/
+body {
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+/*
+  Nunca scroll horizontal (regla de accesibilidad/UX). El tren de
+  logos de TrustedByMarquee es ancho a propósito para el loop infinito
+  — vive en su propio `overflow-hidden`, pero puede empujar el ancho
+  scrolleable del documento igual. Este es el cinturón de seguridad a
+  nivel body: no afecta el scroll vertical, solo corta cualquier
+  desborde horizontal.
 */
 html,
 body {
   overflow-x: hidden;
-}
-
-/*
-  Cursor a medida (CustomCursor.jsx): solo oculta el cursor del
-  sistema cuando ese componente ya confirmó que hay un reemplazo
-  andando (mouse de verdad, sin prefers-reduced-motion) — la clase la
-  agrega/saca el propio componente por JS. Nunca es un `cursor: none`
-  incondicional en el CSS: si el JS no corre por lo que sea, el
-  cursor normal del sistema sigue ahí, nunca desaparece sin más.
-*/
-.fein-custom-cursor,
-.fein-custom-cursor * {
-  cursor: none;
 }

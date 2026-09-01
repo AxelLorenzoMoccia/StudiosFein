@@ -35,6 +35,50 @@
 > **sí** está en git — con hacer `git pull` alcanza para tenerlo disponible en
 > cualquier máquina, sin reinstalar nada.
 
+## 0.1. Pivot — "limpio, básico, blanco y negro" (31 ago 2026)
+
+El dueño de la marca pidió ir en la dirección OPUESTA a todo lo que
+describe la tabla de tokens de §2 más abajo: nada de acento dorado, nada
+de modo oscuro, nada de atmósfera en capas — "tiene que ser LIMPIO TODO
+(...) lo que llama la atención son los diseños que ellos hacen, no la
+web (...) la web tiene que pasar desapercibida con el blanco fondo (...)
+volvé a lo básico (...) menos es más". Se sacaron en la misma pasada: el
+cursor a medida (señalado explícitamente como "el mouse redondo que no
+sirve"), el hover magnético de los CTA, la barra de progreso de scroll,
+el toggle de tema, la secuencia pineada de 866 frames de la Macbook, el
+manifiesto de marca y la grilla de servicios — quedaron 4 piezas: video
+de portada (a pantalla completa, del cliente), carrusel simple de
+piezas ya terminadas, tren de logos de confianza, y contacto.
+
+**La tabla de §2 de acá abajo describe el sistema ANTERIOR y ya no es
+precisa** — se deja como referencia histórica (por si el cliente pide
+volver a algo con más carácter visual más adelante) pero el estado
+REAL del sitio hoy es:
+
+| Token | Valor |
+|---|---|
+| Paleta (6 tonos exactos, pedido del dueño, "conservar en toda la página") | `paper` #FDFDFD (fondo base) · `linen` #F0EEE7 · `sand` #E7E4DB · `stone` #BEBEBC (divisores) · `ash` #8B8B8B (solo texto ≥24px, ver nota abajo) · `ink` #2A2A2A (texto principal) — nombrados así en `tailwind.config.js`, NO usar la escala `neutral-*` de Tailwind en ningún componente nuevo |
+| Acento | Ninguno — blanco y negro puro |
+| Tipografía | Helvetica Neue (archivos propios del cliente, WOFF2 self-hosted en `src/assets/fonts/helvetica-neue/`, solo pesos 300/400/500/700 — ver `index.css`) |
+| Cursor / hover magnético / ThemeToggle / ScrollProgress | Sacados — "menos es más" |
+| Portada | Video del cliente, pantalla completa (`object-fit: cover`, sin letterbox — pedido explícito, la primera versión con `contain` dejaba franjas grisáceas visibles) y mapeado 1:1 al scroll (`video.currentTime`, NO autoplay) — ver `VideoHero.jsx`. Reencodeado con keyframes cada 6 frames para que el seek de cada scroll sea instantáneo. |
+| Header | Fijo, transparente, `mix-blend-mode: difference` sobre blanco puro (única excepción a la paleta de 6 tonos — el blend necesita el extremo puro para invertir bien, ver el comentario de `Header.jsx`). Logo chico, CENTRADO arriba (no a la izquierda), tamaño 21px (14px × 1.5, pedido explícito) — texto real en Helvetica Neue Bold, no una imagen. |
+| Servicios | Volvió (1 sept 2026) — se había sacado en el pivot del 31 ago, pero con copy REAL sacado del catálogo de servicios del cliente (`studiosfein.pdf`, no texto inventado). Fondo blanco liso (`bg-paper`), pedido explícito — el PDF original tenía fondo gris con textura. |
+| Clientes clickeables | `TrustedByMarquee.jsx` — solo los clientes con trabajo real registrado en `CLIENT_WORK` son clickeables (hoy: "Shato", sacado del mismo PDF — dos estampas reales con su tag cosido). Al tocarlos abre `ClientGallery.jsx` con las piezas. Los placeholders `CLIENTE 0N` siguen sin trabajo real atribuible, así que quedan sin clickear — no fabricar una galería que no existe. |
+
+🔧 `ash` (#8B8B8B) da 3.35:1 de contraste contra `paper` — pasa el 3:1
+mínimo de "texto grande" (WCAG: ≥24px, o ≥18.66px en bold) pero NO el
+4.5:1 de texto normal/chico. Para jerarquía de texto secundario en
+tamaños chicos (eyebrows, captions, párrafos de body ~14-16px) se usa
+`ink` + `font-light` (peso 300, ya cargado) en vez de aclarar el
+color — diferenciar por PESO, no por contraste insuficiente.
+
+Los principios de §1 (menos-pero-con-intención, craft, no fabricar
+contenido) siguen aplicando igual — de hecho son los que más se
+reforzaron con este pedido. El framework de animación de §4 y las
+lecciones de GSAP de §5 también siguen vigentes tal cual, solo que hoy
+se usan en muchísimas menos piezas del sitio.
+
 ## 0. Cómo usar esto
 
 - Esto es un resumen accionable, no un reemplazo de las skills instaladas
@@ -68,11 +112,12 @@
    tarjetas con borde-izquierdo-de-color genérico, exceso de emojis como
    iconos, tipografías sobreusadas por default (Inter, Roboto, Arial,
    Fraunces) sin que sea una decisión consciente.
-   - ⚠️ Fein **ya eligió Inter a propósito** (ver comentario en
-     [index.html](index.html): se probó mezclar con un serif itálico y no
-     convenció). Esto no es una regla para revertir esa decisión — es una
-     alerta para la *próxima* vez que se elija tipografía desde cero: no caer
-     en el default por default.
+   - ⚠️ El sitio usaba Inter (elegido a propósito, se probó mezclar con
+     un serif itálico y no convenció) — **pivot de 31 ago 2026 (§0.1):
+     pasó a Helvetica Neue**, pedido explícito del dueño de la marca,
+     archivos propios (no Google Fonts). Sigue siendo una sola familia
+     para todo el sitio, la regla de fondo no cambió — solo cambió CUÁL
+     familia.
 7. **Buscar el elemento memorable.** En cada pieza nueva, identificar cuál va
    a ser el detalle o momento que la gente recuerde (acá: la secuencia
    Macbook pineada, la ola de transición) — y ejecutarlo con precisión, en

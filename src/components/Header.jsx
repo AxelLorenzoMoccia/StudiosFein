@@ -1,61 +1,52 @@
-import { useMagnetic } from '../hooks/useMagnetic';
-import ThemeToggle from './ThemeToggle';
-
 /**
  * HEADER
  * -------
- * Nav fija y mínima: wordmark a la izquierda, link de contacto a la
- * derecha. Sin fondo propio — usa `mix-blend-mode: difference` sobre
- * texto blanco, así se auto-invierte según lo que haya scrolleando
- * debajo (blanco sobre las secciones oscuras, negro sobre las claras
- * como AIGallery/ServicesSection) sin necesidad de detectar con JS en
- * qué sección está el usuario. Es el mismo truco que usan sitios como
- * Stripe/Linear para una nav que "sabe" adaptarse sola.
+ * Fijo, transparente, sobre el video de portada (que ahora ocupa toda
+ * la pantalla y cambia de frame con el scroll — a veces claro, a veces
+ * oscuro). `mix-blend-mode: difference` sobre texto blanco: el mismo
+ * truco que tenía el sitio antes de la limpieza — el color post-blend
+ * se invierte solo según lo que haya debajo, así el logo se lee
+ * SIEMPRE, sin importar qué frame del video esté pasando en ese
+ * instante. Sin esto, un logo blanco fijo desaparecería contra los
+ * tramos claros del video, y uno oscuro fijo desaparecería contra los
+ * tramos oscuros — hacía falta que se ajuste solo.
  *
- * `focus-visible:outline` explícito en el link: el anillo de foco
- * default del navegador también entra en el `mix-blend-mode` del
- * header (hereda de un ancestro con ese blend), así que puede salir
- * con un color raro o directamente invisible según la sección de
- * fondo. Un outline blanco explícito con offset no depende de esa
- * mezcla — sigue siendo visible para navegación por teclado en
- * cualquier sección (regla CRÍTICA de accesibilidad, DESIGN.md §6:
- * "nunca outline: none sin un reemplazo visible" — acá directamente
- * no se saca el default, se refuerza).
+ * Logo chico y centrado (no arriba a la izquierda como antes) —
+ * pedido explícito. Es texto, no una imagen: el wordmark del cliente
+ * es tipográfico (mismo look que aparece en el propio video, "Studios"
+ * + "Fein" corridos) y ya tenemos su tipografía real (Helvetica Neue
+ * Bold) cargada — texto real en vez de un PNG se ve nítido a cualquier
+ * tamaño/densidad de pantalla y no pesa nada.
  *
- * `useMagnetic()`: el link "tira" levemente hacia el mouse al
- * acercarse (se auto-desactiva en touch/reduced-motion, ver ese
- * hook) — uno de los pocos CTA del sitio con este tratamiento, no
- * todo lo clickeable.
+ * "Hablemos" queda a la derecha, mismo tratamiento de blend.
  *
- * `<ThemeToggle />` vive agrupado con "Hablemos" en un mismo
- * contenedor a la derecha — `justify-between` en el <header> solo
- * separa DOS hijos directos (wordmark ↔ resto), así que todo lo que
- * va a la derecha ahora comparte un wrapper con `gap`.
+ * Único lugar del sitio con blanco/negro puros en vez de `paper`/`ink`
+ * de la paleta — a propósito: `mix-blend-mode: difference` invierte
+ * matemáticamente el color debajo restando canal por canal, y solo da
+ * una inversión limpia (blanco↔negro) con los extremos puros (0,0,0)/
+ * (255,255,255). Con `ink` (#2A2A2A, no negro puro) el resultado sería
+ * un gris apagado en vez de invertir de verdad — dejaría de leerse
+ * bien contra los tramos oscuros del video.
  */
 export default function Header() {
-  const magneticRef = useMagnetic();
-
   return (
     <header
-      className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-16"
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-end px-6 py-6 text-white md:px-16"
       style={{ mixBlendMode: 'difference' }}
     >
-      <span className="select-none text-lg font-semibold tracking-tight text-white">Fein</span>
-      {/* Nota: acá NO se puede usar el dorado de acento — con
-          mix-blend-mode: difference en el header, cualquier color que no
-          sea blanco/negro sale distorsionado al mezclarse con el fondo.
-          El "acento" queda en el subrayado animado en vez del color. */}
-      <div className="flex items-center gap-5">
-        <ThemeToggle />
-        <a
-          ref={magneticRef}
-          href="#contacto"
-          className="group pointer-events-auto inline-block rounded-sm text-sm font-medium tracking-wide text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-        >
-          Hablemos
-          <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
-        </a>
-      </div>
+      {/* text-[21px] = 14px (text-sm) × 1.5 — pedido explícito de
+          agrandar el logo del header. */}
+      <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-[21px] font-bold tracking-tight">
+        StudiosFein<span className="align-super text-[0.55em]">®</span>
+      </span>
+
+      <a
+        href="#contacto"
+        className="group pointer-events-auto inline-block rounded-sm text-sm font-medium tracking-wide focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      >
+        Hablemos
+        <span className="mt-0.5 block h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
+      </a>
     </header>
   );
 }

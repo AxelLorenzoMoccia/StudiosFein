@@ -4,27 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Fein — estudio de diseño e identidad de marca. Trabajamos la marca como una experiencia completa: identidad, diseño digital, motion y producto." />
-    <meta name="theme-color" content="#faf9f6" />
-    <title>Fein — Estudio de diseño e identidad de marca</title>
-
-    <!-- Aplica el tema ANTES de que React pinte nada — sin esto, un
-         visitante que ya había elegido oscuro vería un flash del
-         nuevo default claro por una fracción de segundo antes de que
-         ThemeToggle.jsx corrija la clase. Bloqueante a propósito
-         (nada de type="module"/defer): tiene que correr antes del
-         primer paint, es la única forma de evitar el flash. -->
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem('fein-theme');
-          if (stored === 'dark') document.documentElement.classList.add('dark');
-        } catch (e) {
-          // localStorage puede fallar (modo privado estricto, etc.) —
-          // el sitio simplemente arranca en claro, su default.
-        }
-      })();
-    </script>
+    <meta name="description" content="StudiosFein — estudio de diseño e identidad de marca." />
+    <meta name="theme-color" content="#fdfdfd" />
+    <title>StudiosFein</title>
 
     <!-- Open Graph / Twitter Card — sin esto, compartir el link en
          WhatsApp/LinkedIn/Slack muestra una preview vacía o rota. Sin
@@ -33,25 +15,12 @@
          solamente, mejor que nada en blanco. Agregar `og:image` acá
          apenas exista un asset — no hace falta tocar nada más. -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Fein" />
-    <meta property="og:title" content="Fein — Estudio de diseño e identidad de marca" />
-    <meta property="og:description" content="Trabajamos la marca como una experiencia completa: identidad, diseño digital, motion y producto." />
+    <meta property="og:site_name" content="StudiosFein" />
+    <meta property="og:title" content="StudiosFein" />
+    <meta property="og:description" content="Estudio de diseño e identidad de marca." />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Fein — Estudio de diseño e identidad de marca" />
-    <meta name="twitter:description" content="Trabajamos la marca como una experiencia completa: identidad, diseño digital, motion y producto." />
-
-    <!-- Tipografía única para todo el sitio: Inter. Se probó mezclar con
-         un serif itálico (Instrument Serif) para el manifiesto y el cierre
-         de contacto, pero no convenció — se volvió a una sola tipografía
-         limpia en todos lados. Pesos 800/900 sumados para el wordmark
-         "StudiosFein" del Intro (necesita un negro bien pesado) — sigue
-         siendo Inter, no una tipografía nueva. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+    <meta name="twitter:title" content="StudiosFein" />
+    <meta name="twitter:description" content="Estudio de diseño e identidad de marca." />
   </head>
   <body>
     <div id="root"></div>

@@ -1,17 +1,19 @@
 import { useState } from 'react';
+import ClientGallery from './ClientGallery';
+import shatoDog from '../assets/clients/shato/01-shato-dog.webp';
+import shatoHeavenSent from '../assets/clients/shato/02-shato-heavensent.webp';
 
 /* ============================================================
  *  ASSETS — Logos de "Quienes confiaron en nosotros"
  * ============================================================
- *  Colocá los logos reales (idealmente en blanco/monocromo, SVG)
- *  en:
+ *  Colocá los logos reales (idealmente en negro/monocromo, SVG) en:
  *
  *      src/assets/logos/
  *
  *  Se importan y ordenan automáticamente acá abajo (import.meta.glob),
- *  igual que en AIGallery.jsx y MacbookSequenceSection.jsx. Mientras
- *  esa carpeta esté vacía, se muestran wordmarks de texto a modo de
- *  placeholder (ver PLACEHOLDER_BRANDS más abajo).
+ *  igual que en PortfolioCarousel.jsx. Mientras esa carpeta esté
+ *  vacía, se muestran wordmarks de texto a modo de placeholder (ver
+ *  PLACEHOLDER_BRANDS más abajo).
  *
  *  Para que un logo real quede clickeable, agregá su URL en
  *  BRAND_LINKS con la misma clave que el nombre del archivo (sin
@@ -25,16 +27,34 @@ const logoModules = import.meta.glob('../assets/logos/*.{svg,png,webp}', {
 });
 
 // Nombre → sitio oficial del cliente REAL correspondiente. Vacío por
-// default a propósito: acá antes vivían Nike/Adidas/Zara/H&M/Levi's/
-// Uniqlo/Gap/Bershka con link a sus sitios oficiales, como si esta
-// sección ("Quienes confiaron en nosotros") estuviera listando
-// clientes reales de Fein — eso es una afirmación falsa (ninguna de
-// esas marcas es cliente de esta agencia) y encima llevaba tráfico
-// real a sus sitios. Mismo criterio de "no fabricar contenido que no
-// fue provisto" que ya se sigue en el resto del sitio (DESIGN.md
-// §1.8/§7) — completar esto con clientes reales cuando existan, con la
-// key = nombre del archivo del logo (sin extensión).
+// default a propósito — no fabricar clientes que no fueron confirmados.
 const BRAND_LINKS = {};
+
+/* ============================================================
+ *  TRABAJO POR CLIENTE — "ver todos los diseños hechos para esa
+ *  marca" (pedido explícito, 31 ago 2026)
+ * ============================================================
+ *  Nombre EXACTO del cliente (tal como aparece acá) → sus piezas.
+ *  Solo entra acá un cliente si hay evidencia real de que lo es —
+ *  "Shato" salió del propio catálogo de servicios del cliente
+ *  (studiosfein.pdf, sección "Mockups profesionales": dos estampas
+ *  reales con el tag "SHATO STUDIO" cosido en la prenda). El resto de
+ *  la lista de abajo (CLIENTE 02...08) sigue siendo placeholder
+ *  honesto — no hay body of work real para atribuirles todavía, así
+ *  que quedan sin clickear en vez de fingir una galería que no existe.
+ *  Agregar acá un cliente real ↔ agregar su nombre en CLIENT_NAMES lo
+ *  vuelve clickeable automáticamente.
+ * ============================================================ */
+const CLIENT_WORK = {
+  Shato: [
+    { img: shatoDog, title: 'Estampa "Shato" — ilustración + tipografía' },
+    { img: shatoHeavenSent, title: 'Estampa "Heaven Sent"' },
+  ],
+};
+
+// Un cliente real (Shato) + placeholders honestos para el resto —
+// mismo criterio de siempre: nombrar solo lo que está confirmado.
+const CLIENT_NAMES = ['Shato', 'CLIENTE 02', 'CLIENTE 03', 'CLIENTE 04', 'CLIENTE 05', 'CLIENTE 06', 'CLIENTE 07'];
 
 const realLogos = Object.keys(logoModules)
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
@@ -43,18 +63,8 @@ const realLogos = Object.keys(logoModules)
     return { src: logoModules[key], name, url: BRAND_LINKS[name] };
   });
 
-// Placeholder honesto mientras no haya logos reales — un wordmark
-// genérico "CLIENTE 01", "CLIENTE 02"... en vez de nombrar marcas
-// reales (ver el comentario de BRAND_LINKS arriba). Sin URL: un
-// cliente placeholder no tiene sitio real al que mandar a nadie.
-const PLACEHOLDER_COUNT = 8;
-const PLACEHOLDER_BRANDS = Array.from(
-  { length: PLACEHOLDER_COUNT },
-  (_, i) => `CLIENTE ${String(i + 1).padStart(2, '0')}`
-);
-
 const hasRealLogos = realLogos.length > 0;
-const logos = hasRealLogos ? realLogos : PLACEHOLDER_BRANDS.map((name) => ({ name, url: undefined }));
+const logos = hasRealLogos ? realLogos : CLIENT_NAMES.map((name) => ({ name, url: undefined }));
 
 // Se duplica la lista para que el loop de la animación sea perfecto:
 // el track anima de translateX(0%) a translateX(-50%) — si el
@@ -66,7 +76,7 @@ const ITEM_CLASSNAME =
   'flex shrink-0 items-center justify-center rounded px-4 outline-none ' +
   'transition-transform duration-300 ease-out ' +
   'hover:z-10 hover:scale-125 focus-visible:z-10 focus-visible:scale-125 focus-visible:ring-2 ' +
-  'focus-visible:ring-neutral-900/60 dark:focus-visible:ring-white/60';
+  'focus-visible:ring-ink/60';
 
 /**
  * TRUSTED BY MARQUEE — "Quienes confiaron en nosotros"
@@ -75,40 +85,27 @@ const ITEM_CLASSNAME =
  * (`@keyframes` más abajo) — un loop continuo e independiente del
  * scroll, más liviano que animarlo con GSAP/rAF.
  *
- * El `@keyframes`/`animation` va en un `<style>` propio del componente
- * en vez de en tailwind.config.js a propósito: Tailwind no siempre
- * re-lee ese archivo en caliente con el server de dev ya corriendo
- * (nos pasó en este mismo proyecto — hacía falta reiniciar `npm run
- * dev` para que la animación apareciera). Con el `@keyframes` viviendo
- * acá al lado del componente que lo usa, no depende de esa
- * recompilación — siempre está.
- *
  * La PAUSA al hover se maneja con React (`isPaused` +
  * `animationPlayState` inline), no con `:hover` de CSS: así es
- * explícito que "hover en cualquier logo" frena TODO el tren, sin
- * depender de cómo el navegador resuelva la cascada.
- * `onMouseEnter`/`onMouseLeave` en el track (no en cada logo) usan la
- * semántica de `mouseenter` (no re-dispara al pasar de un logo a otro
- * adentro del track), así que no hay parpadeos al mover el mouse
- * dentro del tren.
+ * explícito que "hover en cualquier logo" frena TODO el tren.
  *
- * El logo puntual bajo el mouse además se agranda (`hover:scale-125`
- * en su propio `<a>`), sin afectar a los demás. Al salir, el tren
- * retoma el loop exactamente donde había quedado (no reinicia).
- *
- * Cada logo es un `<a target="_blank">` al sitio oficial de la marca
- * (ver BRAND_LINKS arriba) — clickeable.
+ * Clickeable SOLO donde hay trabajo real registrado (`CLIENT_WORK`) —
+ * toca uno de esos y se abre `ClientGallery.jsx` con las piezas.
+ * Los placeholders sin trabajo real quedan como texto simple, sin
+ * `role="button"` ni cursor de puntero — no hay nada real que abrir
+ * ahí todavía.
  *
  * `prefers-reduced-motion`: en vez de apagar el movimiento del todo
- * (quedaba un tren de logos inmóvil, que se lee como roto), lo hace 3
- * veces más lento — sigue habiendo movimiento perceptible, solo que
- * mucho más suave para quien pidió menos animación.
+ * (queda un tren de logos inmóvil, que se lee como roto), lo hace 3
+ * veces más lento — sigue habiendo movimiento perceptible, mucho más
+ * suave para quien pidió menos animación.
  */
 export default function TrustedByMarquee() {
   const [isPaused, setIsPaused] = useState(false);
+  const [openClient, setOpenClient] = useState(null);
 
   return (
-    <section className="w-full bg-fein-light py-24">
+    <section className="w-full bg-paper py-24">
       <style>{`
         @keyframes fein-marquee {
           0% { transform: translateX(0%); }
@@ -125,14 +122,12 @@ export default function TrustedByMarquee() {
       `}</style>
 
       <div className="mb-14 flex flex-col items-center gap-4 text-center">
-        <span className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-neutral-600 dark:text-neutral-500">
-          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+        <span className="flex items-center gap-3 text-xs font-light uppercase tracking-[0.3em] text-ink">
+          <span className="h-px w-8 bg-stone" aria-hidden="true" />
           Confianza
-          <span className="h-px w-8 bg-accent" aria-hidden="true" />
+          <span className="h-px w-8 bg-stone" aria-hidden="true" />
         </span>
-        <h2 className="text-3xl font-semibold text-neutral-900 dark:text-white md:text-5xl">
-          Quienes confiaron en nosotros
-        </h2>
+        <h2 className="text-3xl font-medium text-ink md:text-5xl">Quienes confiaron en nosotros</h2>
       </div>
 
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
@@ -143,20 +138,42 @@ export default function TrustedByMarquee() {
           onMouseLeave={() => setIsPaused(false)}
         >
           {track.map((logo, index) => {
+            const work = CLIENT_WORK[logo.name];
+            const isClickable = !hasRealLogos && !!work;
+
             const content = hasRealLogos ? (
               <img
                 src={logo.src}
                 alt={logo.name}
                 loading="lazy"
-                className="h-8 w-auto object-contain opacity-60 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0 md:h-10"
+                className="h-8 w-auto object-contain opacity-60 grayscale transition-opacity duration-300 group-hover:opacity-100 md:h-10"
               />
             ) : (
-              <span className="select-none whitespace-nowrap text-2xl font-bold tracking-tight text-neutral-500 opacity-70 transition-all duration-300 group-hover:text-neutral-900 group-hover:opacity-100 dark:group-hover:text-white md:text-3xl">
+              // `ash` (#8B8B8B) da 3.35:1 contra `paper` — por debajo
+              // del 4.5:1 de texto normal, pero este texto es grande
+              // (24px+, "texto grande" en WCAG solo pide 3:1) así que
+              // pasa. `ash` NO se usa para texto chico en ningún otro
+              // lado del sitio por el mismo motivo.
+              <span className="select-none whitespace-nowrap text-2xl font-medium tracking-tight text-ash transition-colors duration-300 group-hover:text-ink md:text-3xl">
                 {logo.name}
               </span>
             );
 
             const key = `${logo.name}-${index}`;
+
+            if (isClickable) {
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setOpenClient(logo.name)}
+                  aria-label={`Ver el trabajo realizado para ${logo.name}`}
+                  className={`group ${ITEM_CLASSNAME}`}
+                >
+                  {content}
+                </button>
+              );
+            }
 
             return logo.url ? (
               <a
@@ -177,6 +194,10 @@ export default function TrustedByMarquee() {
           })}
         </div>
       </div>
+
+      {openClient && CLIENT_WORK[openClient] && (
+        <ClientGallery name={openClient} items={CLIENT_WORK[openClient]} onClose={() => setOpenClient(null)} />
+      )}
     </section>
   );
 }

@@ -1,10 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // 'selector': el modo oscuro se activa agregando la clase `dark` al
-  // <html> a mano (ThemeToggle.jsx), no seguir ciegamente el
-  // prefers-color-scheme del sistema — el sitio ahora es claro por
-  // default (pedido explícito), con oscuro como opción, no al revés.
-  darkMode: 'selector',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -12,18 +7,24 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Una sola tipografía para todo el sitio.
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Helvetica Neue propia del cliente (ver @font-face en
+        // index.css) — Inter/Google Fonts quedaron afuera del todo.
+        sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Acento de marca — dorado apagado, usado con cuentagotas (un
-        // link en hover, un número, un anillo). Nunca como color de
-        // fondo grande: la marca es neutra, esto es la excepción que
-        // confirma la regla.
-        accent: {
-          DEFAULT: '#b08b4f',
-          light: '#d4b876',
-        },
+        // Paleta exacta que pidió el dueño de la marca (31 ago 2026,
+        // 6 tonos) — "esta es la paleta que tenés que conservar en
+        // toda la página". Nombrada semánticamente en vez de usar la
+        // escala neutral-* genérica de Tailwind, para que sea obvio
+        // en cada className CUÁL de los 6 tonos exactos se está
+        // usando (y no colarse un neutral-500 de Tailwind que no es
+        // ninguno de los 6 pedidos).
+        paper: '#FDFDFD', // fondo base de toda la página
+        linen: '#F0EEE7', // fondo secundario, tarjetas/paneles suaves
+        sand: '#E7E4DB', // superficies/divisores un escalón más marcado
+        stone: '#BEBEBC', // divisores y bordes finos
+        ash: '#8B8B8B', // texto secundario (eyebrows, captions)
+        ink: '#2A2A2A', // texto principal, logo, botones sólidos
       },
     },
   },
